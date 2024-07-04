@@ -1,8 +1,7 @@
 package com.example.kadai_002.entity;
 
-import java.security.Timestamp;
-import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,7 +29,7 @@ public class Store {
     @Column(name = "description")
     private String description;
     
-    @Column(name = "openiTimeours")
+    @Column(name = "opening_hours")
     private Time openingHours;
     
     @Column(name = "closing_time")
@@ -46,11 +45,16 @@ public class Store {
     private String phoneNumber;
 
     @Column(name = "closed_day")
-    private Date closedDay;
+    private String closedDay;
     
     @Column(name = "created_at", insertable = false, updatable = false)
     private Timestamp createdAt;
 
     @Column(name = "updated_at", insertable = false, updatable = false)
     private Timestamp updatedAt;
+    
+    
+    @Column(name = "category")
+    private String category;
+    
 }
