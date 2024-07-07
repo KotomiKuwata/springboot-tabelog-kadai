@@ -129,21 +129,21 @@
 								</div>
 								<div class="col-md-8">
 									<div th:if="${#fields.hasErrors('closedDay')}" class="text-danger small mb-2"
-										th:errors="*{'closedDay}"></div>
+										th:errors="*{closedDay}"></div>
 									<input type="text" class="form-control" th:field="*{closedDay}">
 								</div>
 							</div>
 
-							<div class="form-group row mb-3">
+							<!--div class="form-group row mb-3">  カテゴリの入力、数字とカテゴリ名乗ったプルダウン式にする　例：［１ きしめん］
 								<div class="col-md-4">
-									<label for="category" class="col-form-label text-md-left fw-bold">カテゴリ</label>
+									<label for="category_id" class="col-form-label text-md-left fw-bold">カテゴリ</label>
 								</div>
 								<div class="col-md-8">
-									<div th:if="${#fields.hasErrors('category')}"
-										class="text-danger small mb-2" th:errors="*{category}"></div>
-									<input type="text" class="form-control" th:field="*{category}">
+									<div th:if="${#fields.hasErrors('category_id')}"
+										class="text-danger small mb-2" th:errors="*{category_id}"></div>
+									<input type="text" class="form-control" th:field="*{category_id}">
 								</div>
-							</div>
+							</div-->
 
 
 							<div class="form-group d-flex justify-content-center my-4">

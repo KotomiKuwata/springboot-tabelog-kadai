@@ -47,14 +47,13 @@ public class Store {
     @Column(name = "closed_day")
     private String closedDay;
     
+    @Column(name = "category_id")
+    private Integer categoryId;
+    
     @Column(name = "created_at", insertable = false, updatable = false)
     private Timestamp createdAt;
 
     @Column(name = "updated_at", insertable = false, updatable = false)
     private Timestamp updatedAt;
-    
-    
-    @Column(name = "category")
-    private String category;
     
 }

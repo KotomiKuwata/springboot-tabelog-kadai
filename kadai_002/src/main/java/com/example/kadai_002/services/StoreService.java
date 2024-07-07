@@ -17,10 +17,10 @@ import com.example.kadai_002.repository.StoreRepository;
 @Service
 
 public class StoreService {
-	private final StoreRepository StoreRepository;    
+	private final StoreRepository storeRepository;    
     
     public StoreService(StoreRepository storeRepository) {
-        this.StoreRepository = storeRepository;        
+        this.storeRepository = storeRepository;        
     }    
     
     @Transactional
@@ -44,9 +44,9 @@ public class StoreService {
         store.setAddress(storeRegisterForm.getAddress());
         store.setPhoneNumber(storeRegisterForm.getPhoneNumber());
         store.setClosedDay(storeRegisterForm.getClosedDay());
-        store.setCategory(storeRegisterForm.getCategory());
+      
                     
-        StoreRepository.save(store);
+        storeRepository.save(store);
     }  
     
  // UUIDを使って生成したファイル名を返す
