@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -46,6 +48,10 @@ public class Store {
 
     @Column(name = "closed_day")
     private String closedDay;
+    
+    @ManyToOne
+    @JoinColumn(name = "category_id", insertable = false, updatable =false)
+    private Category category;
     
     @Column(name = "category_id")
     private Integer categoryId;
