@@ -6,7 +6,7 @@
 
 	<div th:replace="~{fragment :: styles}"></div>
 
-	<title>店舗登録</title>
+	<title>店舗情報編集</title>
 </head>
 
 <body>
@@ -21,14 +21,17 @@
 						<nav class="mb-4" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
 							<ol class="breadcrumb mb-0">
 								<li class="breadcrumb-item"><a th:href="@{/admin/stores}">店舗一覧</a></li>
-								<li class="breadcrumb-item active" aria-current="page">店舗登録</li>
+								<li class="breadcrumb-item"><a
+										th:href="@{/admin/stores/__${storeEditForm.getId()}__}">店舗詳細</a></li>
+								<li class="breadcrumb-item active" aria-current="page">店舗情報編集</li>
 							</ol>
 						</nav>
 
-						<h1 class="mb-4 text-center">店舗登録</h1>
+						<h1 class="mb-4 text-center">店舗情報編集</h1>
 
-						<form method="post" th:action="@{/admin/stores/create}" th:object="${storeRegisterForm}"
-							enctype="multipart/form-data">
+						<form method="post" th:action="@{/admin/stores/__${storeEditForm.getId()}__/update}"
+							th:object="${storeEditForm}" enctype="multipart/form-data">
+							<input type="hidden" th:field="*{id}">
 
 							<div class="form-group row mb-3">
 								<div class="col-md-4">
@@ -53,7 +56,9 @@
 							</div>
 
 							<!-- 選択された画像の表示場所 -->
-							<div class="row" id="imagePreview"></div>
+							<div th:if="${imageName}" class="row" id="imagePreview"><img
+									th:src="@{/storage/__${imageName}__}" class="mb-3"></div>
+							<div th:unless="${imageName}" class="row" id="imagePreview"></div>
 
 							<div class="form-group row mb-3">
 								<div class="col-md-4">
@@ -144,16 +149,10 @@
 								</div>
 							</div>
 
-
-							<div class="form-group d-flex justify-content-center my-4">
-								<button type="submit" class="btn text-white shadow-sm w-50 kadai_002-btn">登録</button>
-							</div>
-						</form>
 					</div>
 				</div>
 			</div>
 		</main>
-
 		<!-- フッター -->
 		<div th:replace="~{fragment :: footer}"></div>
 	</div>

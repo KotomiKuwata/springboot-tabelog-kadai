@@ -7,10 +7,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
-public class StoreRegisterForm {
+@AllArgsConstructor
+public class StoreEditForm {
+	@NotNull
+    private Integer id;
+	
 	@NotBlank(message = "店舗名を入力してください。")
 	private String name;
 	
@@ -40,5 +45,5 @@ public class StoreRegisterForm {
      private String closedDay;
 	 
 	 @NotBlank(message = "カテゴリを入力してください。")
-     private String category;  
+     private String category; 
 }

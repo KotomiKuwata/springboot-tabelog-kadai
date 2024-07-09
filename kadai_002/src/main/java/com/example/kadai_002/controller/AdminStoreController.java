@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.kadai_002.entity.Store;
+import com.example.kadai_002.form.StoreEditForm;
 import com.example.kadai_002.form.StoreRegisterForm;
 import com.example.kadai_002.repository.CategoryRepository;
 import com.example.kadai_002.repository.StoreRepository;
@@ -75,10 +76,11 @@ public class AdminStoreController {
 		return "admin/stores/register";
 	}
 	
-	@InitBinder("/register")
+	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 	    binder.registerCustomEditor(Time.class, new PropertyEditorSupport() {
-	        public void setAsText(String text) {
+	    	@Override
+	    	public void setAsText(String text) {
 	            try {
 	                // "HH:mm"の形式で入力を受け取り、java.sql.Timeに変換
 	                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -88,7 +90,8 @@ public class AdminStoreController {
 	            }
 	        }
 
-	        public String getAsText() {
+	    	@Override
+	    	public String getAsText() {
 	            Time value = (Time) getValue();
 	            return (value != null ? value.toString() : "");
 	        }
@@ -103,7 +106,7 @@ public class AdminStoreController {
 		}
 
 		storeService.create(storeRegisterForm);
-		redirectAttributes.addFlashAttribute("successMessage", "民宿を登録しました。");    
+		redirectAttributes.addFlashAttribute("successMessage", "店舗を登録しました。");    
 
 		return "redirect:/admin/stores";
 	} 
@@ -111,13 +114,24 @@ public class AdminStoreController {
 	@Autowired
 	private CategoryRepository categoryrepository;
 
-	@GetMapping("/sotre/{}id") 
+	@GetMapping("//{id}") 
 	public String getStoreDetails(@PathVariable("id") Integer id, Model model) {
 		Store store = storeRepository.findById(id).orElse(null);
 		model.addAttribute("store", store);
 		return "storeDetails";
 	} 
 
+	 @GetMapping("/{id}/edit")
+     public String edit(@PathVariable(name = "id") Integer id, Model model) {
+         Store store = storeRepository.getReferenceById(id);
+         String imageName = store.getImageName();
+         StoreEditForm storeEditForm = new StoreEditForm(store.getId(), store.getName(), null, store.getDescription(), store.getOpeningHours(), store.getClosingTime(), store.getPostalCode(), store.getAddress(), store.getPhoneNumber(), store.getClosedDay(), store.getCategory().getName());
+         
+         model.addAttribute("imageName", imageName);
+         model.addAttribute("storeEditForm", storeEditForm);
+         
+         return "admin/stores/edit";
+     }    
 
 
 }

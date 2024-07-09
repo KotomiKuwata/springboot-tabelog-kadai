@@ -29,12 +29,14 @@
 
 						<div class="d-flex justify-content-end align-items-end mb-3">
 							<div>
-								<a href="#">編集</a>
+								<a th:href="@{/admin/stores/{storeId}/edit(storeId=${store.getId()})}">編集</a>
 							</div>
 						</div>
+
 						<div class="mb-3">
-							<img th:if="${store.getImageName()}" th:src="@{/storage/__${store.getImageName()}__}"
-								class="w-100" alt="民宿画像">
+							<img th:if="${store.getImageName()}"
+								th:src="@{/storage/{imageName}(imageName=${store.getImageName()})}" class="w-100"
+								alt="店舗画像">
 							<img th:unless="${store.getImageName()}" th:src="@{/images/noImage.png}" class="w-100"
 								alt="NO IMAGE">
 						</div>
@@ -44,7 +46,6 @@
 								<div class="col-4">
 									<span class="fw-bold">ID</span>
 								</div>
-
 								<div class="col">
 									<span th:text="${store.getId()}"></span>
 								</div>
@@ -74,7 +75,7 @@
 								</div>
 								<div class="col">
 									<span class="kadai_002-pre-wrap"
-										th:text="${#dates.format(store.getOpeningHours, 'HH:mm')}"></span>
+										th:text="${#temporals.format(store.getOpeningHours(), 'HH:mm')}"></span>
 								</div>
 							</div>
 
@@ -84,7 +85,7 @@
 								</div>
 								<div class="col">
 									<span class="kadai_002-pre-wrap"
-										th:text="${#dates.format(store.getClosingTime, 'HH:mm')}"></span>
+										th:text="${#temporals.format(store.getClosingTime(), 'HH:mm')}"></span>
 								</div>
 							</div>
 
@@ -129,13 +130,14 @@
 									<span class="fw-bold">カテゴリ</span>
 								</div>
 								<div class="col">
-									<span th:text="${store.category.name}"></span>
+									<span th:text="${store.getCategory().getName()}"></span>
 								</div>
 							</div>
 
 						</div>
 					</div>
 				</div>
+			</div>
 		</main>
 		<!-- フッター -->
 		<div th:replace="~{fragment :: footer}"></div>

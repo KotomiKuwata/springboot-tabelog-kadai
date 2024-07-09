@@ -1,7 +1,7 @@
 package com.example.kadai_002.entity;
 
-import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,10 +32,10 @@ public class Store {
     private String description;
     
     @Column(name = "opening_hours")
-    private Time openingHours;
+    private LocalTime openingHours;
     
     @Column(name = "closing_time")
-    private Time closingTime;
+    private LocalTime closingTime;
     
     @Column(name = "postal_code")
     private String postalCode;
