@@ -1,0 +1,76 @@
+html {
+	font-size: 14px;
+}
+
+body {
+	font-family: 'Noto Sans JP', sans-serif;
+}
+
+h1 {
+	font-size: 1.5rem;
+}
+
+a {
+	color: #a52a2a;
+	text-decoration: none !important;
+}
+
+a:hover {
+	color: #800000;
+}
+
+footer {
+	margin-top: auto;
+	background-color: #bc8f8f;
+	text-align: center;
+	padding: 20px 0;
+}
+
+.kadai_002-wrapper {
+	min-height: 100vh;
+	position: relative;
+	padding-bottom: 60px;
+	box-sizing: border-box;
+}
+
+.kadai_002-navbar {
+	min-height: 60px;
+}
+
+.kadai_002-logo {
+
+	height: 100px;
+}
+
+.kadai_002-btn {
+	background-color: #a52a2a !important;
+	transition: 0.1s;
+}
+
+.kadai_002-btn:hover {
+	opacity: 0.8;
+}
+
+.kadai_002-page-link {
+	color: #a52a2a;
+}
+
+.kadai_002-page-link:hover {
+	color: #800000;
+}
+
+.kadai_002-active {
+	background-color: #a52a2a !important;
+	border-color: #a52a2a !important;
+}
+
+.kadai_002-pre-wrap {
+	/* 改行文字で行を折り返す */
+	white-space: pre-wrap;
+}
+
+@media screen and (min-width: 1400px) {
+	.kadai_002-container {
+		max-width: 1200px;
+	}
+}
