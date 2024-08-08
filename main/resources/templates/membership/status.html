@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+	<title>会員ステータス</title>
+	<th:replace="fragments :: meta">
+		</th:replace>
+		<th:replace="fragments :: styles">
+			</th:replace>
+</head>
+
+<body>
+	<div class="kadai_002-wrapper">
+		<!-- ヘッダー -->
+		<div th:replace="~{fragments :: header}"></div>
+
+		<main>
+			<div class="container pb-5 kadai_002-container">
+				<div class="row justify-content-center">
+					<div class="col-xl-5 col-lg-6 col-md-8">
+						<nav class="my-3" style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+							<ol class="breadcrumb mb-0">
+								<li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
+								<li class="breadcrumb-item"><a th:href="@{/user}">会員情報</a></li>
+								<li class="breadcrumb-item active" aria-current="page">会員ステータス</li>
+							</ol>
+						</nav>
+
+						<h1>会員ステータス</h1>
+						<p th:if="${membership != null}">
+							現在の会員ステータス: <span th:text="${membership.subscriptionStatus}"></span><br>
+							有効期限: <span th:text="${#dates.format(membership.endDate, 'yyyy-MM-dd')}"></span>
+						</p>
+						<p th:if="${membership == null}">
+							現在、有料会員ではありません。
+						</p>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<!-- フッター -->
+		<div th:replace="~{fragments :: footer}"></div>
+	</div>
+
+	<div th:replace="~{fragments :: scripts}"></div>
+</body>
+
+</html>
