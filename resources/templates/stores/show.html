@@ -188,9 +188,11 @@
 								<div sec:authorize="isAuthenticated()" class="col-lg-4 px-0 ps-lg-4 mb-4">
 									<div class="card">
 										<div class="card-body">
-											<form th:action="@{/stores/{id}/reviews/input(id=${store.id})}"
-												method="get" th:object="${reviewRegisterForm}">
-												<input type="hidden" th:field="*{storeId}" />
+											<form method="get" th:action="@{/stores/__${store.getId()}__/reviews/input}" th:object="${reservationInputForm}">
+											<form th:action="@{/reviews/create}" method="post"
+												th:object="${reviewRegisterForm}">
+												<input type="hidden" th:field="*{storeId}">
+
 												<div class="form-group mb-2">
 													<label for="rating"
 														class="col-form-label text-md-left fw-bold">評価：</label>
@@ -204,6 +206,7 @@
 													<span th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"
 														class="text-danger small"></span>
 												</div>
+
 												<div class="form-group mb-2">
 													<label for="comment"
 														class="col-form-label text-md-left fw-bold">コメント：</label>
@@ -212,12 +215,12 @@
 													<span th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"
 														class="text-danger small"></span>
 												</div>
+
 												<div class="form-group d-flex justify-content-center my-4">
 													<button type="submit"
 														class="btn text-white shadow-sm w-50 kadai_002-btn">投稿する</button>
 												</div>
 											</form>
-
 										</div>
 									</div>
 								</div>
@@ -235,7 +238,7 @@
 								<div sec:authorize="isAuthenticated()" class="col-lg-4 px-0 ps-lg-4 mb-4">
 									<div class="card">
 										<div class="card-body">
-											<form method="get" th:action="@{/stores/__${store.id}__/reservations/input}"
+											<form method="get" th:action="@{/stores/__${store.getId}__/reservations/input}"
 												th:object="${reservationInputForm}">
 												<div class="form-group mb-2">
 													<label for="reservationDatetime"
@@ -275,6 +278,10 @@
 		<!-- フッター -->
 		<div th:replace="~{fragment :: footer}"></div>
 	</div>
+	<!-- Flatpickr -->
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+	<script th:src="@{/js/flatpickr.js}"></script>
 
 	<div th:replace="~{fragment :: scripts}"></div>
 </body>
