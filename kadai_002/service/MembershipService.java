@@ -16,9 +16,11 @@ public class MembershipService {
     
     public void updateMembershipStatus(String email) {
         User user = userRepository.findByEmail(email);
-        if (user != null) {
+        
+        //ここで無料会員を有料会員にしたい。
+        /*if (user != null) {
             user.setIsPaidMember(true);
             userRepository.save(user);
-        }
+        }*/
     }
 }

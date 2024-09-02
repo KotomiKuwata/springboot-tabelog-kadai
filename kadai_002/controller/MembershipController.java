@@ -61,15 +61,15 @@ public class MembershipController {
 	}
 
 	@GetMapping("/info")
-    public String showMembershipInfo(Principal principal, Model model, @RequestParam(required = false) String session_id) {
-        User user = userService.findByEmail(principal.getName());
-        model.addAttribute("user", user);
-        if (session_id != null) {
-            // セッションIDを使用して決済結果を確認し、必要に応じてメッセージを表示
-            model.addAttribute("paymentMessage", "決済が完了しました。");
-        }
-        return "membership/info";
-    }
+	public String showMembershipInfo(Principal principal, Model model, @RequestParam(required = false) String session_id) {
+	    User user = userService.findByEmail(principal.getName());
+	    model.addAttribute("user", user);
+	    if (session_id != null) {
+	        // セッションIDを使用して決済結果を確認し、必要に応じてメッセージを表示
+	        model.addAttribute("paymentMessage", "決済が完了しました。");
+	    }
+	    return "membership/info";
+	}
 }
 /*@Autowired
 public MembershipController(StripeService stripeService, MembershipService membershipService) {
