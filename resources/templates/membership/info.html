@@ -27,7 +27,7 @@
 
 						<h1 class="mb-3 text-center">会員ステータス</h1>
 						<div class="container mb-4">
-							<p>会員種別: <span th:text="${user.isPaidMember() ? '有料会員' : '無料会員'}"></span></p>
+							<p>会員種別: <span th:text="#"></span></p>
 							<p>名前: <span th:text="${user.getName()}"></span></p>
 							<p>メールアドレス: <span th:text="${user.getEmail()}"></span></p>
 							<div th:if="${user.isPaidMember()}">

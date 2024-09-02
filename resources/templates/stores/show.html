@@ -31,6 +31,25 @@
 
 						<h1 class="mb-4 text-center" th:text="${store.getName()}"></h1>
 
+						<div sec:authorize="isAnonymous()" class="col-lg-4 px-0 ps-lg-4 mb-4">
+							<div class="d-flex justify-content-end align-items-end mb-3">
+								<div>
+									<p class="card-text">お気に入り登録するには<a th:href="@{/login}">ログイン</a>が必要です。</p>
+								</div>
+							</div>
+						</div>
+
+						<div sec:authorize="isAuthenticated()" class="mb-4">
+							<form th:if="${isFavorite != null and !isFavorite}"
+								th:action="@{/stores/{id}/favorite(id=${store.id})}" method="post">
+								<button type="submit" class="btn kadai_002-btn text-white">お気に入りに追加</button>
+							</form>
+							<form th:if="${isFavorite != null and isFavorite}"
+								th:action="@{/stores/{id}/unfavorite(id=${store.id})}" method="post">
+								<button type="submit" class="btn kadai_002-btn text-white">お気に入りから削除</button>
+							</form>
+						</div>
+
 						<div th:if="${errorMessage}" class="alert alert-danger">
 							<span th:text="${errorMessage}"></span>
 						</div>
@@ -169,10 +188,9 @@
 								<div sec:authorize="isAuthenticated()" class="col-lg-4 px-0 ps-lg-4 mb-4">
 									<div class="card">
 										<div class="card-body">
-											<form th:action="@{/reviews/create}" method="get"
-												th:object="${reviewRegisterForm}">
+											<form th:action="@{/stores/{id}/reviews/input(id=${store.id})}"
+												method="get" th:object="${reviewRegisterForm}">
 												<input type="hidden" th:field="*{storeId}" />
-
 												<div class="form-group mb-2">
 													<label for="rating"
 														class="col-form-label text-md-left fw-bold">評価：</label>
@@ -186,7 +204,6 @@
 													<span th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"
 														class="text-danger small"></span>
 												</div>
-
 												<div class="form-group mb-2">
 													<label for="comment"
 														class="col-form-label text-md-left fw-bold">コメント：</label>
@@ -195,12 +212,12 @@
 													<span th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"
 														class="text-danger small"></span>
 												</div>
-
 												<div class="form-group d-flex justify-content-center my-4">
 													<button type="submit"
 														class="btn text-white shadow-sm w-50 kadai_002-btn">投稿する</button>
 												</div>
-											</form>											
+											</form>
+
 										</div>
 									</div>
 								</div>

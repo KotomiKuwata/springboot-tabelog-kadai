@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+
+<head>
+	<title>レビュー投稿確認</title>
+</head>
+
+<body>
+	<h1>レビュー投稿確認</h1>
+	<form th:action="@{/stores/{id}/reviews/input(id=${reviewRegisterForm.storeId})}" method="get"
+		th:object="${reviewRegisterForm}">
+		<input type="hidden" th:field="*{storeId}" />
+		<input type="hidden" th:field="*{userId}" />
+		<input type="hidden" th:field="*{rating}" />
+		<input type="hidden" th:field="*{comment}" />
+		<p>店舗名: <span th:text="${store.name}"></span></p>
+		<p>評価: <span th:text="${'★'.repeat(reviewRegisterForm.rating)}">★★★★★</span></p>
+		<p>コメント: <span th:text="*{comment}"></span></p>
+		<button type="submit">投稿する</button>
+	</form>
+</body>
+
+</html>
