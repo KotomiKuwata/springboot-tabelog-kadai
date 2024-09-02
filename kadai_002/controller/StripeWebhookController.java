@@ -12,7 +12,6 @@ import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
 
-
 public class StripeWebhookController {
 	private final StripeService stripeService;
 	private final MembershipService membershipService;
@@ -28,7 +27,7 @@ public class StripeWebhookController {
 	    this.membershipService = membershipService;
 	}
 
-    @PostMapping("/stripe/webhook")
+    @PostMapping("/stripe/webhook") 
     public ResponseEntity<String> handleStripeWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
         // Stripe署名の検証
         Event event;

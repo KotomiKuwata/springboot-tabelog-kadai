@@ -27,7 +27,7 @@ public class StripeService {
 		String requestUrl = new String(httpServletRequest.getRequestURL());
 
 		// リクエストURLを元にベースURLを設定
-		String baseUrl = requestUrl.replaceAll("/membership/subscribe", "/login?registered");
+		String baseUrl = requestUrl.replaceAll("/membership/subscribe", "");
 
 		// 成功およびキャンセル時のURL設定
 		String successUrl = baseUrl + "/membership/subscribe-success?session_id={CHECKOUT_SESSION_ID}";
@@ -38,8 +38,8 @@ public class StripeService {
 		SessionCreateParams params = SessionCreateParams.builder()
 				.addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
 				.setMode(SessionCreateParams.Mode.SUBSCRIPTION)
-				.setSuccessUrl(baseUrl)
-				.setCancelUrl(baseUrl)
+				.setSuccessUrl(successUrl)
+				.setCancelUrl(cancelUrl)
 				.addLineItem(
 						SessionCreateParams.LineItem.builder()
 								.setPriceData(

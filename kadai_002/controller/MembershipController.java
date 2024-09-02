@@ -32,10 +32,14 @@ public class MembershipController {
 	}
 
 	@GetMapping("/subscribe")
-	public String showSubscribePage(@RequestParam(required = false) String error, Model model) {
+	public String showSubscribePage(Principal principal, HttpServletRequest request, @RequestParam(required = false) String error, Model model) throws StripeException  {
 		if (error != null && error.equals("payment_cancelled")) {
 			model.addAttribute("errorMessage", "決済がキャンセルされました。");
 		}
+		String userName = principal.getName();
+ 		String sessionId = stripeService.createStripeSession(userName, request);
+ 		model.addAttribute("sessionId", sessionId);
+ 		System.out.println(sessionId);
 		return "membership/subscribe";
 	}
 

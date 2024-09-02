@@ -1,5 +1,6 @@
 package com.example.kadai_002.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,5 +17,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Integer>{
     
  // ユーザーIDとストアIDに基づいてお気に入りを削除
     void deleteByUserAndStore(User user, Store store);
+
+	List<Favorite> findByUser(User user);
 
 }
