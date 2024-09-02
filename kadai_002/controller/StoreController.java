@@ -21,11 +21,11 @@ import com.example.kadai_002.entity.Review;
 import com.example.kadai_002.entity.Store;
 import com.example.kadai_002.entity.User;
 import com.example.kadai_002.form.ReservationInputForm;
-import com.example.kadai_002.form.ReviewRegisterForm;
+import com.example.kadai_002.form.ReviewInputForm;
 import com.example.kadai_002.repository.CategoryRepository;
+import com.example.kadai_002.repository.ReviewRepository;
 import com.example.kadai_002.repository.StoreRepository;
 import com.example.kadai_002.service.FavoriteService;
-import com.example.kadai_002.service.ReviewService;
 import com.example.kadai_002.service.UserService;
 
 @Controller
@@ -33,15 +33,15 @@ import com.example.kadai_002.service.UserService;
 public class StoreController {
 	private final StoreRepository storeRepository;
 	private final CategoryRepository categoryRepository;
-	private final ReviewService reviewService;
+	private final ReviewRepository reviewRepository;
 	private final UserService userService;
 	private final FavoriteService favoriteService;
 
 	public StoreController(StoreRepository storeRepository, CategoryRepository categoryRepository,
-			ReviewService reviewService, UserService userService, FavoriteService favoriteService) {
+			ReviewRepository reviewRepository, UserService userService, FavoriteService favoriteService) {
 		this.storeRepository = storeRepository;
 		this.categoryRepository = categoryRepository;
-		this.reviewService = reviewService;
+		this.reviewRepository = reviewRepository;
 		this.userService = userService;
 		this.favoriteService = favoriteService;
 	}
@@ -88,25 +88,24 @@ public class StoreController {
 	}
 
 	@GetMapping("/{id}")
-	public String show(@PathVariable(name = "id") Integer id, Model model,
-	        @AuthenticationPrincipal UserDetails userDetails) {
-	    Store store = storeRepository.getReferenceById(id);
+	public String show(@PathVariable(name = "id") Integer id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+		Store store = storeRepository.getReferenceById(id);
+		Review review = reviewRepository.getReferenceById(id);
 
-	    if (userDetails != null) {
-	        User user = userService.findByEmail(userDetails.getUsername());
-	        boolean isFavorite = favoriteService.isFavorite(user, store);
-	        model.addAttribute("isFavorite", isFavorite);
-	    } else {
-	        model.addAttribute("isFavorite", false);
-	    }
+		model.addAttribute("store", store);
+		model.addAttribute("reservationInputForm", new ReservationInputForm());
+		
+		model.addAttribute("review", review);
+		model.addAttribute("reviewInputForm", new ReviewInputForm());
+		
+		 if (userDetails != null) {
+		        User user = userService.findByEmail(userDetails.getUsername());
+		        boolean isFavorite = favoriteService.isFavorite(user, store);
+		        model.addAttribute("isFavorite", isFavorite);
+		    } else {
+		        model.addAttribute("isFavorite", false);  // 未認証の場合は false を設定
+		    }
 
-	    model.addAttribute("store", store);
-	    model.addAttribute("reservationInputForm", new ReservationInputForm());
-	    model.addAttribute("reviewRegisterForm", new ReviewRegisterForm());
-	    
-	    List<Review> reviews = reviewService.getReviewsByStoreId(id);
-	    model.addAttribute("reviews", reviews);
-
-	    return "stores/show";
+		return "stores/show";
 	}
 }
