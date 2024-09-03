@@ -17,8 +17,9 @@ public class MembershipService {
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
 	private final UserDetailsService userDetailsService;
-	
-	public MembershipService(UserRepository userRepository, RoleRepository roleRepository, UserDetailsService userDetailsService) {
+
+	public MembershipService(UserRepository userRepository, RoleRepository roleRepository,
+			UserDetailsService userDetailsService) {
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
 		this.userDetailsService = userDetailsService;
@@ -35,12 +36,23 @@ public class MembershipService {
 	}
 
 	public void updateSecurityContext(String email) {
-    	User user = userRepository.findByEmail(email);
-        if (user != null && user.getRole().getName().equals("ROLE_PAID_MEMBER")) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            Authentication authentication = 
-                new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+		User user = userRepository.findByEmail(email);
+		if (user != null && user.getRole().getName().equals("ROLE_PAID_MEMBER")) {
+			UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+			Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,
+					userDetails.getPassword(), userDetails.getAuthorities());
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+		}
+	}
+
+	public void cancelMembership(String email) {
+	    User user = userRepository.findByEmail(email);
+	    if (user != null) {
+	        Role freeMemberRole = roleRepository.findByName("ROLE_GENERAL");
+	        user.setRole(freeMemberRole);
+	        user.setIsPaidMember(false);
+	        user.setStripeSubscriptionId(null);
+	        userRepository.save(user);
+	    }
 	}
 }

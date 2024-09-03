@@ -58,6 +58,12 @@ public class User {
     @Column(name = "updated_at", insertable = false, updatable = false)
     private Timestamp updatedAt; 
     
+    @Column(name = "stripe_customer_id")
+    private String stripeCustomerId;
+
+    @Column(name = "stripe_subscription_id")
+    private String stripeSubscriptionId;
+    
 }
 
 

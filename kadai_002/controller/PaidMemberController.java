@@ -46,7 +46,7 @@ public class PaidMemberController {
         
         model.addAttribute("userEditForm", userEditForm);
         
-        return "user/edit";
+        return "paidmember/edit";
     } 
     
     @PostMapping("/update")
@@ -64,7 +64,8 @@ public class PaidMemberController {
         userService.update(userEditForm);
         redirectAttributes.addFlashAttribute("successMessage", "会員情報を編集しました。");
         
-        return "redirect:/user";
+        return "redirect:/paidmember";
     }
+    
 }
 

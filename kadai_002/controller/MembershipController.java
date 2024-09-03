@@ -14,6 +14,7 @@ import com.example.kadai_002.service.MembershipService;
 import com.example.kadai_002.service.StripeService;
 import com.example.kadai_002.service.UserService;
 import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentMethod;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -69,6 +70,32 @@ public class MembershipController {
 	        model.addAttribute("paymentMessage", "決済が完了しました。");
 	    }
 	    return "membership/info";
+	}
+	
+	// カード情報の表示
+	@GetMapping("/card-info")
+	public String showCardInfo(Principal principal, Model model) throws StripeException {
+	    User user = userService.findByEmail(principal.getName());
+	    PaymentMethod paymentMethod = stripeService.getPaymentMethod(user.getStripeCustomerId());
+	    model.addAttribute("paymentMethod", paymentMethod);
+	    return "membership/card_info";
+	}
+
+	// カード情報の更新
+	@PostMapping("/update-card")
+	public String updateCard(Principal principal, @RequestParam("paymentMethodId") String paymentMethodId) throws StripeException {
+	    User user = userService.findByEmail(principal.getName());
+	    stripeService.updatePaymentMethod(user.getStripeCustomerId(), paymentMethodId);
+	    return "redirect:/membership/card-info";
+	}
+
+	// サブスクリプションの解約
+	@PostMapping("/cancel-subscription")
+	public String cancelSubscription(Principal principal) throws StripeException {
+	    User user = userService.findByEmail(principal.getName());
+	    stripeService.cancelSubscription(user.getStripeSubscriptionId());
+	    membershipService.cancelMembership(user.getEmail());
+	    return "redirect:/membership/info";
 	}
 }
 /*@Autowired

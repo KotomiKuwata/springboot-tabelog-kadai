@@ -1,12 +1,20 @@
 package com.example.kadai_002.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
+import com.stripe.model.Customer;
 import com.stripe.model.Event;
+import com.stripe.model.PaymentMethod;
+import com.stripe.model.Subscription;
 import com.stripe.model.checkout.Session;
+import com.stripe.param.CustomerUpdateParams;
+import com.stripe.param.PaymentMethodListParams;
+import com.stripe.param.SubscriptionCancelParams;
 import com.stripe.param.checkout.SessionCreateParams;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,8 +22,9 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 public class StripeService {
 	private final MembershipService membershipService;
+
 	public StripeService(MembershipService membershipService) {
-	    this.membershipService = membershipService;
+		this.membershipService = membershipService;
 	}
 
 	@Value("${stripe.api-key}")
@@ -47,10 +56,11 @@ public class StripeService {
 												.setCurrency("jpy")
 												.setUnitAmount(300L)
 												.setRecurring(
-														SessionCreateParams.LineItem.PriceData.Recurring.builder().setInterval(
-																SessionCreateParams.LineItem.PriceData.Recurring.Interval.MONTH)
-														.build())
-												
+														SessionCreateParams.LineItem.PriceData.Recurring.builder()
+																.setInterval(
+																		SessionCreateParams.LineItem.PriceData.Recurring.Interval.MONTH)
+																.build())
+
 												.setProductData(
 														SessionCreateParams.LineItem.PriceData.ProductData.builder()
 																.setName("NAGOYAMESHI")
@@ -60,18 +70,56 @@ public class StripeService {
 								.build())
 				.build();
 		try {
-            Session session = Session.create(params);
-            return session.getId();
-        } catch (StripeException e) {
-            e.printStackTrace();
-            return "";
-        }
-    } 
+			Session session = Session.create(params);
+			return session.getId();
+		} catch (StripeException e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
+
+	public PaymentMethod getPaymentMethod(String customerId) throws StripeException {
+		Stripe.apiKey = stripeApiKey;
+		
+		List<PaymentMethod> paymentMethods = PaymentMethod.list(
+				PaymentMethodListParams.builder()
+						.setCustomer(customerId)
+						.setType(PaymentMethodListParams.Type.CARD)
+						.build())
+				.getData();
+
+		// 最初のカード（または好きなロジック）を返す。複数のカードがある場合に備えてロジックを調整可能。
+		return paymentMethods.isEmpty() ? null : paymentMethods.get(0);
+	}
 	
-	public void processSessionCompleted (Event event) {
+	// 新規メソッド: カード情報の変更
+	public void updatePaymentMethod(String customerId, String newPaymentMethodId) throws StripeException {
+		Stripe.apiKey = stripeApiKey;
+		
+		CustomerUpdateParams params = CustomerUpdateParams.builder()
+	        .setInvoiceSettings(
+	            CustomerUpdateParams.InvoiceSettings.builder()
+	                .setDefaultPaymentMethod(newPaymentMethodId)
+	                .build()
+	        )
+	        .build();
+
+	    Customer customer = Customer.retrieve(customerId);
+	    customer.update(params);
+	}
+
+	// 新規メソッド: サブスクリプションのキャンセル
+	public void cancelSubscription(String subscriptionId) throws StripeException {
+		Stripe.apiKey = stripeApiKey;
+		
+		Subscription subscription = Subscription.retrieve(subscriptionId);
+	    subscription.cancel(SubscriptionCancelParams.builder().build());
+	}
+
+	public void processSessionCompleted(Event event) {
 		Session session = (Session) event.getDataObjectDeserializer().getObject().get();
-        String userEmail = session.getCustomerEmail();
-        membershipService.updateMembershipStatus(userEmail);
+		String userEmail = session.getCustomerEmail();
+		membershipService.updateMembershipStatus(userEmail);
 	}
 }
 
