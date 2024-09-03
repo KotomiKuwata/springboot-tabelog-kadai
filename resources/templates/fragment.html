@@ -64,6 +64,28 @@
 								<a class="dropdown-item samuraitravel-dropdown-item" th:href="@{/reservations}">
 									予約一覧
 								</a>
+
+								<a class="dropdown-item kadai_002-dropdown-item" th:href="@{/logout}"
+									onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+									ログアウト
+								</a>
+								<form class="d-none" id="logout-form" th:action="@{/logout}" method="post"></form>
+							</div>
+						</li>
+
+						<!-- 有料会員であれば表示する-->
+						<li class="nav-item dropdown" sec:authorize="hasRole('ROLE_PAID_MEMBER')">
+							<a id="navbarDropdownGeneral" class="nav-link dropdown-toggle" href="#" role="button"
+								data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+								<span sec:authentication="principal.user.name"></span>
+							</a>
+							<div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownGeneral">
+								<a class="dropdown-item kadai_002-dropdown-item" th:href="@{/paidmember}">
+									会員情報
+								</a>
+								<a class="dropdown-item samuraitravel-dropdown-item" th:href="@{/reservations}">
+									予約一覧
+								</a>
 								<a class="dropdown-item samuraitravel-dropdown-item" th:href="@{/favorites}">
 									お気に入り一覧
 								</a>
@@ -76,11 +98,8 @@
 								</a>
 								<form class="d-none" id="logout-form" th:action="@{/logout}" method="post"></form>
 							</div>
-						</li>
 
-						<!-- 有料会員であれば表示する>
-
-						<!-- 管理者であれば表示する -->
+							<!-- 管理者であれば表示する -->
 						<li class="nav-item dropdown" sec:authorize="hasRole('ROLE_ADMIN')">
 							<a id="navbarDropdownAdmin" class="nav-link dropdown-toggle" href="#" role="button"
 								data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>

@@ -190,8 +190,8 @@
 										<div class="card-body">
 											<form method="get" th:action="@{/stores/__${store.getId()}__/reviews/input}" th:object="${reservationInputForm}">
 											<form th:action="@{/reviews/create}" method="post"
-												th:object="${reviewRegisterForm}">
-												<input type="hidden" th:field="*{storeId}">
+												th:object="${reviewInputForm}">
+												<input type="hidden" th:field="*{store.Id}">
 
 												<div class="form-group mb-2">
 													<label for="rating"
