@@ -86,6 +86,8 @@ CREATE TABLE IF NOT EXISTS users (
     is_paid_member BOOLEAN NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    stripe_customer_id VARCHAR(255) NOT NULL,
+    stripe_subscription_id VARCHAR(255) NOT NULL,
     FOREIGN KEY (role_id) REFERENCES roles (id)
 );
 
@@ -97,3 +99,4 @@ CREATE TABLE IF NOT EXISTS favorites (
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (store_id) REFERENCES stores (id)
 );
+
