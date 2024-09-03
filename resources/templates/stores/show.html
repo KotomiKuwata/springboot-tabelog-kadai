@@ -188,10 +188,8 @@
 								<div sec:authorize="isAuthenticated()" class="col-lg-4 px-0 ps-lg-4 mb-4">
 									<div class="card">
 										<div class="card-body">
-											<form method="get" th:action="@{/stores/__${store.getId()}__/reviews/input}" th:object="${reservationInputForm}">
-											<form th:action="@{/reviews/create}" method="post"
-												th:object="${reviewInputForm}">
-												<input type="hidden" th:field="*{store.Id}">
+											<form method="get" th:action="@{/stores/__${store.getId()}__/reviews/input}" th:object="${reviewInputForm}">
+										<!--<form method="get" th:action="@{/stores/__${store.getId}__/reservations/input}"th:object="${reservationInputForm}">-->
 
 												<div class="form-group mb-2">
 													<label for="rating"
@@ -238,6 +236,7 @@
 								<div sec:authorize="isAuthenticated()" class="col-lg-4 px-0 ps-lg-4 mb-4">
 									<div class="card">
 										<div class="card-body">
+											
 											<form method="get" th:action="@{/stores/__${store.getId}__/reservations/input}"
 												th:object="${reservationInputForm}">
 												<div class="form-group mb-2">
