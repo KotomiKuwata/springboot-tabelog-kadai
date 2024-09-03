@@ -31,14 +31,11 @@ public class ReviewController {
 	private final ReviewService reviewService;
 	private final StoreRepository storeRepository;
 	private final ReviewRepository reviewRepository;
-	private final ReviewRegisterForm reviewRegisterForm;
 
-	public ReviewController(ReviewService reviewService, StoreRepository storeRepository,
-			ReviewRepository reviewRepository, ReviewRegisterForm reviewRegisterForm) {
+	public ReviewController(ReviewService reviewService, StoreRepository storeRepository, ReviewRepository reviewRepository) {
 		this.reviewService = reviewService;
 		this.storeRepository = storeRepository;
 		this.reviewRepository = reviewRepository;
-		this.reviewRegisterForm = reviewRegisterForm;
 	}
 
 	@GetMapping
@@ -82,13 +79,13 @@ public class ReviewController {
 		return "redirect:/stores/{id}/reviews/confirm";
 
 	}
-	
+
 	@PostMapping("/stores/{id}/reviews/create")
-    public String create(@ModelAttribute ReviewRegisterForm reviewRegisterForm) {                
-		reviewService.create(reviewRegisterForm);        
-        
-        return "redirect:/reviews?reviewed";
-    }
+	public String create(@ModelAttribute ReviewRegisterForm reviewRegisterForm) {
+		reviewService.create(reviewRegisterForm);
+
+		return "redirect:/reviews?reviewed";
+	}
 
 }
 

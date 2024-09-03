@@ -5,9 +5,10 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
+
 public class ReviewRegisterForm {
-	
-    private Integer storeId;
+
+	private Integer storeId;
 	
 	private Integer userId;
 	
