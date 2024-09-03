@@ -97,7 +97,6 @@ public class StoreController {
 		
 		model.addAttribute("review", review);
 		model.addAttribute("reviewInputForm", new ReviewInputForm());
-		//model.addAttribute("reviewRegisterForm", new ReviewRegisterForm());
 		
 		 if (userDetails != null) {
 		        User user = userService.findByEmail(userDetails.getUsername());
