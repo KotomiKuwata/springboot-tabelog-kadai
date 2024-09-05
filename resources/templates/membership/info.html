@@ -4,7 +4,7 @@
 <head>
 	<div th:replace="~{fragment :: meta}"></div>
 	<div th:replace="~{fragment :: styles}"></div>
-	<title>会員情報</title>
+	<title>完了情報</title>
 	<link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 
@@ -21,16 +21,23 @@
 							<ol class="breadcrumb mb-0">
 								<li class="breadcrumb-item"><a th:href="@{/}">ホーム</a></li>
 								<li class="breadcrumb-item"><a th:href="@{/user}">会員情報</a></li>
-								<li class="breadcrumb-item active" aria-current="page">会員ステータス</li>
+								<li class="breadcrumb-item active" aria-current="page">完了情報</li>
 							</ol>
 						</nav>
 
-						<h1 class="mb-3 text-center">会員ステータス</h1>
+						<h1 class="mb-3 text-center">完了情報</h1>
 						<div class="container mb-4">
 							<p>会員種別: <span th:text="${user.isPaidMember} ? '有料会員' : '無料会員'"></span></p>
 							<p>名前: <span th:text="${user.name}"></span></p>
 							<p>メールアドレス: <span th:text="${user.email}"></span></p>
 
+							<!-- カード情報の表示 -->
+							<div th:if="${user.isPaidMember}">
+								<h2 class="mt-4 mb-3">カード情報</h2>
+								<p>カードブランド: <span th:text="${user.cardBrand}"></span></p>
+								<p>カード番号（下4桁）: <span th:text="${user.cardLast4}"></span></p>
+								<p>有効期限: <span th:text="${user.cardExpMonth + '/' + user.cardExpYear}"></span></p>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -44,7 +51,6 @@
 </body>
 
 </html>
-
 
 <!--
 	<div th:if="${user.isPaidMember}">
