@@ -20,6 +20,10 @@ public class UserDetailsImpl implements UserDetails {
         return user;
     }
     
+    public Integer getId() {
+        return user.getId();
+    }
+    
     // ハッシュ化済みのパスワードを返す
     @Override
     public String getPassword() {
@@ -61,4 +65,5 @@ public class UserDetailsImpl implements UserDetails {
     public boolean isEnabled() {
         return user.getEnabled();
     }
+    
 }

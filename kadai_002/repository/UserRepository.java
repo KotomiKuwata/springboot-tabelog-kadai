@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.kadai_002.entity.User;
 
-
-public interface UserRepository extends JpaRepository<User, Integer> {	
+public interface UserRepository extends JpaRepository<User, Integer> {
 	public User findByEmail(String email);
-	public Page<User> findByNameLikeOrFuriganaLike(String nameKeyword, String furiganaKeyword, Pageable pageable);
+
+	Page<User> findByNameLikeOrFuriganaLikeOrEmailLike(String name, String furigana, String email, Pageable pageable);
+
 	User findByName(String name);
+
 	User findById(Long id);
 }

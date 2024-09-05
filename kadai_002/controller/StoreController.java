@@ -88,23 +88,24 @@ public class StoreController {
 	}
 
 	@GetMapping("/{id}")
-	public String show(@PathVariable(name = "id") Integer id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+	public String show(@PathVariable(name = "id") Integer id, Model model,
+			@AuthenticationPrincipal UserDetails userDetails) {
 		Store store = storeRepository.getReferenceById(id);
-		Review review = reviewRepository.getReferenceById(id);
+		List<Review> reviews = reviewRepository.findByStoreId(id);
 
-		model.addAttribute("store", store);
-		model.addAttribute("reservationInputForm", new ReservationInputForm());
-		
-		model.addAttribute("review", review);
-		model.addAttribute("reviewInputForm", new ReviewInputForm());
-		
-		 if (userDetails != null) {
-		        User user = userService.findByEmail(userDetails.getUsername());
-		        boolean isFavorite = favoriteService.isFavorite(user, store);
-		        model.addAttribute("isFavorite", isFavorite);
-		    } else {
-		        model.addAttribute("isFavorite", false);  // 未認証の場合は false を設定
-		    }
+		// 店舗に関連するレビューのリストを取得
+	    model.addAttribute("store", store);
+	    model.addAttribute("reviews", reviews);  // レビューのリストをモデルに追加
+	    model.addAttribute("reservationInputForm", new ReservationInputForm());
+	    model.addAttribute("reviewInputForm", new ReviewInputForm());
+
+		if (userDetails != null) {
+			User user = userService.findByEmail(userDetails.getUsername());
+			boolean isFavorite = favoriteService.isFavorite(user, store);
+			model.addAttribute("isFavorite", isFavorite);
+		} else {
+			model.addAttribute("isFavorite", false); // 未認証の場合は false を設定
+		}
 
 		return "stores/show";
 	}

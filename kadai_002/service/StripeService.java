@@ -5,26 +5,33 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.example.kadai_002.entity.User;
+import com.example.kadai_002.repository.UserRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentMethod;
-import com.stripe.model.Subscription;
+import com.stripe.model.SetupIntent;
 import com.stripe.model.checkout.Session;
-import com.stripe.param.CustomerUpdateParams;
+import com.stripe.param.PaymentMethodAttachParams;
 import com.stripe.param.PaymentMethodListParams;
-import com.stripe.param.SubscriptionCancelParams;
+import com.stripe.param.SetupIntentCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class StripeService {
-	private final MembershipService membershipService;
+	private final UserRepository userRepository;
 
-	public StripeService(MembershipService membershipService) {
-		this.membershipService = membershipService;
+	public StripeService(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
+
+	public String processSessionCompleted(Event event) {
+		Session session = (Session) event.getDataObjectDeserializer().getObject().get();
+		return session.getCustomerEmail();
 	}
 
 	@Value("${stripe.api-key}")
@@ -80,7 +87,7 @@ public class StripeService {
 
 	public PaymentMethod getPaymentMethod(String customerId) throws StripeException {
 		Stripe.apiKey = stripeApiKey;
-		
+
 		List<PaymentMethod> paymentMethods = PaymentMethod.list(
 				PaymentMethodListParams.builder()
 						.setCustomer(customerId)
@@ -91,37 +98,88 @@ public class StripeService {
 		// 最初のカード（または好きなロジック）を返す。複数のカードがある場合に備えてロジックを調整可能。
 		return paymentMethods.isEmpty() ? null : paymentMethods.get(0);
 	}
-	
-	// 新規メソッド: カード情報の変更
-	public void updatePaymentMethod(String customerId, String newPaymentMethodId) throws StripeException {
-		Stripe.apiKey = stripeApiKey;
-		
-		CustomerUpdateParams params = CustomerUpdateParams.builder()
-	        .setInvoiceSettings(
-	            CustomerUpdateParams.InvoiceSettings.builder()
-	                .setDefaultPaymentMethod(newPaymentMethodId)
-	                .build()
-	        )
-	        .build();
 
-	    Customer customer = Customer.retrieve(customerId);
-	    customer.update(params);
+	public String getCustomerIdFromSession(String sessionId) throws StripeException {
+		Stripe.apiKey = stripeApiKey;
+		Session session = Session.retrieve(sessionId);
+		return session.getCustomer();
 	}
 
-	// 新規メソッド: サブスクリプションのキャンセル
-	public void cancelSubscription(String subscriptionId) throws StripeException {
+	public void saveCardInfo(String customerId, String userEmail) throws StripeException {
 		Stripe.apiKey = stripeApiKey;
-		
-		Subscription subscription = Subscription.retrieve(subscriptionId);
-	    subscription.cancel(SubscriptionCancelParams.builder().build());
+
+		Customer customer = Customer.retrieve(customerId);
+		PaymentMethod paymentMethod = PaymentMethod.retrieve(customer.getInvoiceSettings().getDefaultPaymentMethod());
+
+		User user = userRepository.findByEmail(userEmail);
+		user.setCardLast4(paymentMethod.getCard().getLast4());
+		user.setCardBrand(paymentMethod.getCard().getBrand());
+		user.setCardExpMonth(paymentMethod.getCard().getExpMonth().intValue());
+		user.setCardExpYear(paymentMethod.getCard().getExpYear().intValue());
+
+		userRepository.save(user);
 	}
 
-	public void processSessionCompleted(Event event) {
-		Session session = (Session) event.getDataObjectDeserializer().getObject().get();
-		String userEmail = session.getCustomerEmail();
-		membershipService.updateMembershipStatus(userEmail);
+	public SetupIntent createSetupIntent(String customerId) throws StripeException {
+		Stripe.apiKey = stripeApiKey;
+		SetupIntentCreateParams params = SetupIntentCreateParams.builder()
+				.setCustomer(customerId)
+				.build();
+		return SetupIntent.create(params);
+	}
+
+	public PaymentMethod attachPaymentMethod(String customerId, String paymentMethodId) throws StripeException {
+		Stripe.apiKey = stripeApiKey;
+		PaymentMethod paymentMethod = PaymentMethod.retrieve(paymentMethodId);
+		PaymentMethodAttachParams attachParams = PaymentMethodAttachParams.builder()
+				.setCustomer(customerId)
+				.build();
+		return paymentMethod.attach(attachParams);
+	}
+
+	public PaymentMethod detachPaymentMethod(String paymentMethodId) throws StripeException {
+		Stripe.apiKey = stripeApiKey;
+		PaymentMethod paymentMethod = PaymentMethod.retrieve(paymentMethodId);
+		return paymentMethod.detach();
 	}
 }
+
+/* 新規メソッド: カード情報の変更
+public void updatePaymentMethod(String customerId, String newPaymentMethodId) throws StripeException {
+	Stripe.apiKey = stripeApiKey;
+
+	CustomerUpdateParams params = CustomerUpdateParams.builder()
+			.setInvoiceSettings(
+					CustomerUpdateParams.InvoiceSettings.builder()
+							.setDefaultPaymentMethod(newPaymentMethodId)
+							.build())
+			.build();
+
+	Customer customer = Customer.retrieve(customerId);
+	customer.update(params);
+}
+
+// 新規メソッド: サブスクリプションのキャンセル
+public void cancelSubscription(String subscriptionId) throws StripeException {
+	Stripe.apiKey = stripeApiKey;
+
+	Subscription subscription = Subscription.retrieve(subscriptionId);
+	subscription.cancel(SubscriptionCancelParams.builder().build());
+}
+
+// processSessionCompletedメソッドの更新
+public void processSessionCompleted(Event event) {
+	Session session = (Session) event.getDataObjectDeserializer().getObject().get();
+	String userEmail = session.getCustomerEmail();
+	String customerId = session.getCustomer();
+	membershipService.updateMembershipStatus(userEmail);
+	try {
+		saveCardInfo(customerId, userEmail);
+	} catch (StripeException e) {
+		// エラーハンドリング
+		e.printStackTrace();
+	}
+}*/
 
 /* @Value("${stripe.api-key}")
  private String stripeApiKey;

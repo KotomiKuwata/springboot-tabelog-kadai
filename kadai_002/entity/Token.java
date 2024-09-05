@@ -14,7 +14,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "password_reset_tokens")
+@Table(name = "tokens")
 public class Token {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

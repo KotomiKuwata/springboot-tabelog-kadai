@@ -52,6 +52,11 @@ public class User {
     @Column(name = "is_paid_member")
     private Boolean isPaidMember;
     
+    public Boolean isPaidMember() {
+        return this.isPaidMember;
+    }
+    
+    
     @Column(name = "created_at", insertable = false, updatable = false)
     private Timestamp createdAt;
     
@@ -63,6 +68,19 @@ public class User {
 
     @Column(name = "stripe_subscription_id")
     private String stripeSubscriptionId;
+    
+    @Column(name = "card_last4")
+    private String cardLast4;
+
+    @Column(name = "card_brand")
+    private String cardBrand;
+
+    @Column(name = "card_exp_month")
+    private Integer cardExpMonth;
+
+    @Column(name = "card_exp_year")
+    private Integer cardExpYear;
+    
     
 }
 

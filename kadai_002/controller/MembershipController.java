@@ -33,14 +33,15 @@ public class MembershipController {
 	}
 
 	@GetMapping("/subscribe")
-	public String showSubscribePage(Principal principal, HttpServletRequest request, @RequestParam(required = false) String error, Model model) throws StripeException  {
+	public String showSubscribePage(Principal principal, HttpServletRequest request,
+			@RequestParam(required = false) String error, Model model) throws StripeException {
 		if (error != null && error.equals("payment_cancelled")) {
 			model.addAttribute("errorMessage", "決済がキャンセルされました。");
 		}
 		String userName = principal.getName();
- 		String sessionId = stripeService.createStripeSession(userName, request);
- 		model.addAttribute("sessionId", sessionId);
- 		System.out.println(sessionId);
+		String sessionId = stripeService.createStripeSession(userName, request);
+		model.addAttribute("sessionId", sessionId);
+		System.out.println(sessionId);
 		return "membership/subscribe";
 	}
 
@@ -55,48 +56,63 @@ public class MembershipController {
 
 	@GetMapping("/subscribe-success")
 	public String subscribeSuccess(@RequestParam("session_id") String sessionId,
-			Principal principal, Model model) {
-		String userEmail = principal.getName();
-		membershipService.updateMembershipStatus(userEmail);
-		return "redirect:/membership/info?session_id=" + sessionId;
+	        Principal principal, Model model) {
+	    try {
+	        String userEmail = principal.getName();
+	        String customerId = stripeService.getCustomerIdFromSession(sessionId);
+	        membershipService.updateMembershipStatus(userEmail, customerId);
+	        return "redirect:/membership/info?session_id=" + sessionId;
+	    } catch (StripeException e) {
+	        // エラーハンドリング
+	        e.printStackTrace();
+	        return "error-page";
+	    }
 	}
 
 	@GetMapping("/info")
-	public String showMembershipInfo(Principal principal, Model model, @RequestParam(required = false) String session_id) {
-	    User user = userService.findByEmail(principal.getName());
-	    model.addAttribute("user", user);
-	    if (session_id != null) {
-	        // セッションIDを使用して決済結果を確認し、必要に応じてメッセージを表示
-	        model.addAttribute("paymentMessage", "決済が完了しました。");
-	    }
-	    return "membership/info";
+	public String showMembershipInfo(Principal principal, Model model,
+			@RequestParam(required = false) String session_id) throws StripeException {
+		User user = userService.findByEmail(principal.getName());
+		model.addAttribute("user", user);
+
+		if (user.isPaidMember()) {
+			PaymentMethod paymentMethod = stripeService.getPaymentMethod(user.getStripeCustomerId());
+			model.addAttribute("paymentMethod", paymentMethod);
+		}
+
+		if (session_id != null) {
+			model.addAttribute("paymentMessage", "決済が完了しました。");
+		}
+
+		return "membership/info";
 	}
-	
+
 	// カード情報の表示
 	@GetMapping("/card-info")
 	public String showCardInfo(Principal principal, Model model) throws StripeException {
-	    User user = userService.findByEmail(principal.getName());
-	    PaymentMethod paymentMethod = stripeService.getPaymentMethod(user.getStripeCustomerId());
-	    model.addAttribute("paymentMethod", paymentMethod);
-	    return "membership/card_info";
+		User user = userService.findByEmail(principal.getName());
+		PaymentMethod paymentMethod = stripeService.getPaymentMethod(user.getStripeCustomerId());
+		model.addAttribute("paymentMethod", paymentMethod);
+		return "membership/card_info";
 	}
 
-	// カード情報の更新
+	/* カード情報の更新
 	@PostMapping("/update-card")
-	public String updateCard(Principal principal, @RequestParam("paymentMethodId") String paymentMethodId) throws StripeException {
-	    User user = userService.findByEmail(principal.getName());
-	    stripeService.updatePaymentMethod(user.getStripeCustomerId(), paymentMethodId);
-	    return "redirect:/membership/card-info";
-	}
+	public String updateCard(Principal principal, @RequestParam("paymentMethodId") String paymentMethodId)
+			throws StripeException {
+		User user = userService.findByEmail(principal.getName());
+		stripeService.updatePaymentMethod(user.getStripeCustomerId(), paymentMethodId);
+		return "redirect:/membership/card-info";
+	}*/
 
-	// サブスクリプションの解約
+	/* サブスクリプションの解約
 	@PostMapping("/cancel-subscription")
 	public String cancelSubscription(Principal principal) throws StripeException {
-	    User user = userService.findByEmail(principal.getName());
-	    stripeService.cancelSubscription(user.getStripeSubscriptionId());
-	    membershipService.cancelMembership(user.getEmail());
-	    return "redirect:/membership/info";
-	}
+		User user = userService.findByEmail(principal.getName());
+		stripeService.cancelSubscription(user.getStripeSubscriptionId());
+		membershipService.cancelMembership(user.getEmail());
+		return "redirect:/membership/info";
+	}*/
 }
 /*@Autowired
 public MembershipController(StripeService stripeService, MembershipService membershipService) {

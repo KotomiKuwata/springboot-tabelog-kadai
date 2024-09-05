@@ -1,10 +1,13 @@
 package com.example.kadai_002.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,13 +20,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.kadai_002.entity.Review;
+import com.example.kadai_002.entity.Store;
 import com.example.kadai_002.entity.User;
+import com.example.kadai_002.form.ReservationInputForm;
 import com.example.kadai_002.form.ReviewInputForm;
-import com.example.kadai_002.form.ReviewRegisterForm;
 import com.example.kadai_002.repository.ReviewRepository;
 import com.example.kadai_002.repository.StoreRepository;
 import com.example.kadai_002.security.UserDetailsImpl;
 import com.example.kadai_002.service.ReviewService;
+import com.example.kadai_002.service.UserService;
 
 @Controller
 @RequestMapping("/reviews")
@@ -31,11 +36,14 @@ public class ReviewController {
 	private final ReviewService reviewService;
 	private final StoreRepository storeRepository;
 	private final ReviewRepository reviewRepository;
+	private final UserService userService;
 
-	public ReviewController(ReviewService reviewService, StoreRepository storeRepository, ReviewRepository reviewRepository) {
+	public ReviewController(ReviewService reviewService, StoreRepository storeRepository,
+			ReviewRepository reviewRepository, UserService userService) {
 		this.reviewService = reviewService;
 		this.storeRepository = storeRepository;
 		this.reviewRepository = reviewRepository;
+		this.userService = userService;
 	}
 
 	@GetMapping
@@ -70,6 +78,11 @@ public class ReviewController {
 
 		// 再度バリデーションチェック
 		if (bindingResult.hasErrors()) {
+			Store store = storeRepository.getReferenceById(id);
+			List<Review> reviews = reviewRepository.findByStoreId(id);
+			model.addAttribute("store", store);
+			model.addAttribute("reviews", reviews);
+			model.addAttribute("reservationInputForm", new ReservationInputForm());
 			model.addAttribute("errorMessage", "レビュー内容に不備があります。");
 			return "stores/show";
 		}
@@ -80,13 +93,27 @@ public class ReviewController {
 
 	}
 
-	@PostMapping("/stores/{id}/reviews/create")
-	public String create(@ModelAttribute ReviewRegisterForm reviewRegisterForm) {
-		reviewService.create(reviewRegisterForm);
-
-		return "redirect:/reviews?reviewed";
+	@PostMapping("/stores/{id}/reviews/confirm")
+	public String confirm(@PathVariable(name = "id") Integer id,
+			@ModelAttribute @Validated ReviewInputForm reviewInputForm,
+			BindingResult result,
+			Model model) {
+		if (result.hasErrors()) {
+			return "stores/show";
+		}
+		model.addAttribute("store", storeRepository.getReferenceById(id));
+		return "reviews/confirm";
 	}
 
+	@PostMapping("/stores/{id}/reviews/create")
+	public String create(@PathVariable(name = "id") Integer id, @ModelAttribute ReviewInputForm reviewInputForm,
+	        @AuthenticationPrincipal UserDetails userDetails) {
+	    reviewInputForm.setStoreId(id);
+	    User user = userService.findByEmail(userDetails.getUsername());
+	    reviewInputForm.setUserId(user.getId());
+	    reviewService.create(reviewInputForm);
+	    return "redirect:/reviews?reviewed";
+	}
 }
 
 /*@GetMapping("/stores/{id}/reviews/input")
