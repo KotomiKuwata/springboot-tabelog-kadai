@@ -34,7 +34,6 @@
 							<!-- カード情報の表示 -->
 							<div th:if="${user.isPaidMember}">
 								<h2 class="mt-4 mb-3">カード情報</h2>
-								<p>カードブランド: <span th:text="${user.cardBrand}"></span></p>
 								<p>カード番号（下4桁）: <span th:text="${user.cardLast4}"></span></p>
 								<p>有効期限: <span th:text="${user.cardExpMonth + '/' + user.cardExpYear}"></span></p>
 							</div>

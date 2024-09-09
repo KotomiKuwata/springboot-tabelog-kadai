@@ -98,18 +98,12 @@
 									<span class="fw-bold">カード情報</span>
 								</div>
 								<div class="col">
-									<div th:if="${paymentMethod != null}">
-										<span>
-											<strong>カード番号（末尾4桁）:</strong> <span
-												th:text="${paymentMethod.card.last4}"></span>
-										</span>
-										<span>
-											<strong>有効期限:</strong> <span
-												th:text="${paymentMethod.card.exp_month}"></span>/<span
-												th:text="${paymentMethod.card.exp_year}"></span>
-										</span>
+									<div th:if="${user.isPaidMember}">
+										<p>カード番号（下4桁）: <span th:text="${user.cardLast4}"></span></p>
+										<p>有効期限: <span th:text="${user.cardExpMonth + '/' + user.cardExpYear}"></span>
+										</p>
 									</div>
-									<div th:if="${paymentMethod == null}">
+									<div th:if="${user.isPaidMember == null}">
 										<span>カード情報がありません。</span>
 									</div>
 								</div>
@@ -117,8 +111,10 @@
 
 							<div class="form-group d-flex justify-content-center my-4">
 								<div class="col text-center">
-									<a class="btn text-white shadow-sm kadai_002-btn"
-										th:href="@{/paidmember/cancel}">有料会員解約</a>
+									<form th:action="@{/cancel-subscription}" method="post">
+										<button type="submit"
+											class="btn text-white shadow-sm kadai_002-btn">有料会員解約</button>
+									</form>
 								</div>
 							</div>
 

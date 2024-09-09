@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+
+<head>
+	<title>カード情報</title>
+</head>
+
+<body>
+	<h1>カード情報</h1>
+	<div th:if="${paymentMethod != null}">
+		<p>カード番号（末尾4桁）: <span th:text="${paymentMethod.card.last4}"></span></p>
+		<p>有効期限: <span th:text="${paymentMethod.card.exp_month}"></span>/<span
+				th:text="${paymentMethod.card.exp_year}"></span></p>
+	</div>
+	<div th:if="${paymentMethod == null}">
+		<p>カード情報がありません。</p>
+	</div>
+	<div id="card-element"></div>
+	<button id="submit-button">カード情報を更新</button>
+
+	<script src="https://js.stripe.com/v3/"></script>
+	<script th:inline="javascript">
+		const stripe = Stripe('pk_test_51PjGIyFRY5VG4shkpqJOgbBIKa42NRQ4ZHuP5C03X6btIJnLFaAunpdOBc9t9fc04txhW8BiGFvdjkQIxb15gk0D00fYp1C0Uy');
+		const elements = stripe.elements();
+		const cardElement = elements.create('card');
+		cardElement.mount('#card-element');
+
+		const submitButton = document.getElementById('submit-button');
+		submitButton.addEventListener('click', async (event) => {
+			const {paymentMethod, error} = await stripe.createPaymentMethod({
+				type: 'card',
+				card: cardElement,
+			});
+
+			if (error) {
+				console.error(error);
+			} else {
+				fetch('/membership/update-card', {
+					method: 'POST',
+					headers: {'Content-Type': 'application/json'},
+					body: JSON.stringify({paymentMethodId: paymentMethod.id})
+				}).then(response => {
+					if (response.ok) {
+						console.log('カード情報が更新されました');
+						location.reload();
+					}
+				});
+			}
+		});
+	</script>
+</body>
+
+</html>

@@ -31,10 +31,11 @@
 
 						<h1 class="mb-4 text-center" th:text="${store.getName()}"></h1>
 
-						<div sec:authorize="isAuthenticated()" class="col-lg-4 px-0 ps-lg-4 mb-4">
+						<div sec:authorize="hasRole('ROLE_GENERAL')" class="col-lg-4 px-0 ps-lg-4 mb-4">
 							<div class="d-flex justify-content-end align-items-end mb-3">
 								<div>
-									<p class="card-text">お気に入り登録するには<a th:href="@{/membership/subscribe}">有料会員登録</a>が必要です。</p>
+									<p class="card-text">お気に入り登録するには<a
+											th:href="@{/membership/subscribe}">有料会員登録</a>が必要です。</p>
 								</div>
 							</div>
 						</div>
@@ -175,10 +176,11 @@
 									</div>
 								</div>
 
-								<div sec:authorize="isAuthenticated()" class="col-lg-4 px-0 ps-lg-4 mb-4">
+								<div sec:authorize="hasRole('ROLE_GENERAL')" class="col-lg-4 px-0 ps-lg-4 mb-4">
 									<div class="card">
 										<div class="card-body">
-											<p class="card-text">レビュー投稿するには<a th:href="@{	/membership/subscribe}">有料会員登録</a>が必要です。</p>
+											<p class="card-text">レビュー投稿するには<a
+													th:href="@{	/membership/subscribe}">有料会員登録</a>が必要です。</p>
 											<button type="submit" class="btn text-white shadow-sm w-100 kadai_002-btn"
 												disabled>投稿する</button>
 										</div>
@@ -241,7 +243,6 @@
 												th:action="@{/stores/__${store.getId}__/reservations/input}"
 												th:object="${reservationInputForm}">
 												<div class="form-group mb-2">
-													<!--/stores/{id}/reservations(id=${store.getId()})/input-->
 													<label for="reservationDatetime"
 														class="col-form-label text-md-left fw-bold">来店日時</label>
 													<div th:if="${#fields.hasErrors('reservationDatetime')}"
@@ -249,7 +250,7 @@
 														th:errors="*{reservationDatetime}">
 													</div>
 													<input type="datetime-local" class="form-control"
-														th:field="*{reservationDatetime}" step="900">
+														th:field="*{reservationDatetime}" step="1800">
 												</div>
 
 												<div class="form-group mb-4">
@@ -282,7 +283,7 @@
 	<!-- Flatpickr -->
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
-	<script th:src="@{/js/flatpickr.js}"></script>
+	<script th:src="@{/js/reservations.js}"></script>
 
 	<div th:replace="~{fragment :: scripts}"></div>
 </body>

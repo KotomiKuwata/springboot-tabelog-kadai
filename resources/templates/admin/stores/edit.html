@@ -133,7 +133,17 @@
 								<div class="col-md-8">
 									<div th:if="${#fields.hasErrors('closedDay')}" class="text-danger small mb-2"
 										th:errors="*{closedDay}"></div>
-									<input type="text" class="form-control" th:field="*{closedDay}">
+									<select class="form-control" th:field="*{closedDay}">
+										<option value="">選択してください</option>
+										<option value="日曜日">日曜日</option>
+										<option value="月曜日">月曜日</option>
+										<option value="火曜日">火曜日</option>
+										<option value="水曜日">水曜日</option>
+										<option value="木曜日">木曜日</option>
+										<option value="金曜日">金曜日</option>
+										<option value="土曜日">土曜日</option>
+										<option value="年中無休">年中無休</option>
+									</select>
 								</div>
 							</div>
 
