@@ -1,5 +1,6 @@
 package com.example.kadai_002.controller;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -34,22 +35,24 @@ public class AdminCategoryController {
 		this.categoryService = categoryService;
 	}
 
-	@GetMapping 
-	public String index(Model model, @PageableDefault(page = 0, size = 10, sort = "id", direction = Direction.ASC) Pageable pageable, @RequestParam(name = "keyword", required = false) String keyword) {
+	@GetMapping
+	public String index(Model model,
+			@PageableDefault(page = 0, size = 10, sort = "id", direction = Direction.ASC) Pageable pageable,
+			@RequestParam(name = "keyword", required = false) String keyword) {
 		Page<Category> categoryPage;
-	    
-	    if (keyword != null && !keyword.isEmpty()) {
-	        categoryPage = categoryRepository.findByNameLike("%" + keyword + "%", pageable);                
-	    } else {
-	        categoryPage = categoryRepository.findAll(pageable);
-	    }  
-	           
-	   model.addAttribute("categoryPage", categoryPage);  
-	   
-	    model.addAttribute("keyword", keyword);
-	   
-	   return "admin/categories/index";
-	}  
+
+		if (keyword != null && !keyword.isEmpty()) {
+			categoryPage = categoryRepository.findByNameLike("%" + keyword + "%", pageable);
+		} else {
+			categoryPage = categoryRepository.findAll(pageable);
+		}
+
+		model.addAttribute("categoryPage", categoryPage);
+
+		model.addAttribute("keyword", keyword);
+
+		return "admin/categories/index";
+	}
 
 	@GetMapping("/register")
 	public String register(Model model) {
@@ -82,22 +85,25 @@ public class AdminCategoryController {
 
 	@PostMapping("/{id}/delete")
 	public String delete(@PathVariable(name = "id") Integer id, RedirectAttributes redirectAttributes) {
-		categoryRepository.deleteById(id);
+		try {
+			categoryService.deleteById(id);
+			redirectAttributes.addFlashAttribute("successMessage", "カテゴリを削除しました。");
+		} catch (DataIntegrityViolationException e) {
+			redirectAttributes.addFlashAttribute("errorMessage", "このカテゴリは使用中のため削除できません。");
+		}
+		return "redirect:/admin/categories";
+	}
 
-		redirectAttributes.addFlashAttribute("successMessage", "カテゴリ情報を削除しました。");
+	@PostMapping("/{id}/update")
+	public String update(@ModelAttribute @Validated CategoryEditForm categoryEditForm, BindingResult bindingResult,
+			RedirectAttributes redirectAttributes) {
+		if (bindingResult.hasErrors()) {
+			return "admin/categories/edit";
+		}
+
+		categoryService.update(categoryEditForm);
+		redirectAttributes.addFlashAttribute("successMessage", "カテゴリ情報を編集しました。");
 
 		return "redirect:/admin/categories";
 	}
-	
-	@PostMapping("/{id}/update")
-    public String update(@ModelAttribute @Validated CategoryEditForm categoryEditForm, BindingResult bindingResult, RedirectAttributes redirectAttributes) {        
-        if (bindingResult.hasErrors()) {
-            return "admin/categories/edit";
-        }
-        
-        categoryService.update(categoryEditForm);
-        redirectAttributes.addFlashAttribute("successMessage", "カテゴリ情報を編集しました。");
-        
-        return "redirect:/admin/categories";
-    }  
 }

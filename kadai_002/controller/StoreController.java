@@ -69,7 +69,7 @@ public class StoreController {
 
 		return "stores/index";
 	}
-
+	
 	@PostMapping("/{id}/favorite")
 	public String addFavorite(@PathVariable(name = "id") Integer id, @AuthenticationPrincipal UserDetails userDetails) {
 		Store store = storeRepository.getReferenceById(id);

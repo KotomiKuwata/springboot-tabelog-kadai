@@ -29,33 +29,64 @@ public class ReviewService {
 
 	@Transactional
 	public void create(ReviewInputForm reviewInputForm) {
-	    if (reviewInputForm.getStoreId() == null || reviewInputForm.getUserId() == null) {
-	        throw new IllegalArgumentException("Store ID and User ID must not be null");
-	    }
-	    Review review = new Review();
-	    Store store = storeRepository.getReferenceById(reviewInputForm.getStoreId());
-	    User user = userRepository.getReferenceById(reviewInputForm.getUserId());
+		try {
+			if (reviewInputForm.getStoreId() == null || reviewInputForm.getUserId() == null) {
+				throw new IllegalArgumentException("Store ID and User ID must not be null");
+			}
+			Review review = new Review();
+			Store store = storeRepository.getReferenceById(reviewInputForm.getStoreId());
+			User user = userRepository.getReferenceById(reviewInputForm.getUserId());
 
-	    review.setStore(store);
-	    review.setUser(user);
-	    review.setRating(reviewInputForm.getRating());
-	    review.setComment(reviewInputForm.getComment());
-	    review.setTimestamp(LocalDateTime.now());
+			review.setStore(store);
+			review.setUser(user);
+			review.setRating(reviewInputForm.getRating());
+			review.setComment(reviewInputForm.getComment());
+			review.setTimestamp(LocalDateTime.now());
 
-	    validateReview(review);
-	    reviewRepository.save(review);
+			validateReview(review);
+			reviewRepository.save(review);
+			System.out.println("Review saved successfully: " + review);
+		} catch (Exception e) {
+			System.err.println("Error occurred while saving review: " + e.getMessage());
+			throw e; // 再スローしてトランザクションをロールバック
+		}
+	}
+
+	@Transactional
+	public void update(Integer id, ReviewInputForm reviewInputForm) {
+		try {
+			Review review = reviewRepository.findById(id)
+					.orElseThrow(() -> new IllegalArgumentException("Review not found with id: " + id));
+
+			review.setRating(reviewInputForm.getRating());
+			review.setComment(reviewInputForm.getComment());
+
+			validateReview(review);
+			reviewRepository.save(review);
+			System.out.println("Review updated successfully: " + review);
+		} catch (Exception e) {
+			System.err.println("Error occurred while updating review: " + e.getMessage());
+			throw e; // 再スローしてトランザクションをロールバック
+		}
+	}
+
+	@Transactional
+	public void delete(Integer id) {
+		Review review = reviewRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("Review not found with id: " + id));
+		reviewRepository.delete(review);
 	}
 
 	public void validateReview(Review review) {
-	    if (review.getRating() == null || review.getRating() < 1 || review.getRating() > 5) {
-	        throw new IllegalArgumentException("評価は1から5の間で入力してください。");
-	    }
-	    if (review.getComment() == null || review.getComment().trim().isEmpty()) {
-	        throw new IllegalArgumentException("コメントを入力してください。");
-	    }
-	    if (review.getComment().length() > 200) {
-	        throw new IllegalArgumentException("コメントは200文字以内で入力してください。");
-	    }
+		if (review.getRating() < 1 || review.getRating() > 5) {
+			throw new IllegalArgumentException("評価は1から5の間で入力してください。");
+		}
+		if (review.getComment() == null || review.getComment().trim().isEmpty()) {
+			throw new IllegalArgumentException("コメントを入力してください。");
+		}
+		if (review.getComment().length() > 200) {
+			throw new IllegalArgumentException("コメントは200文字以内で入力してください。");
+		}
 	}
 }
 

@@ -11,6 +11,7 @@ import com.example.kadai_002.service.StripeService;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
+import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 
 public class StripeWebhookController {
@@ -42,9 +43,10 @@ public class StripeWebhookController {
 
 		// イベントタイプに応じた処理
 		if ("checkout.session.completed".equals(event.getType())) {
-			stripeService.processSessionCompleted(event);
+		    Session session = (Session) event.getDataObjectDeserializer().getObject().get();
+		    String userEmail = session.getCustomerEmail();
+		    membershipService.updateMembershipStatus(userEmail);
 		}
-
 		return ResponseEntity.ok().build();
 	}
 

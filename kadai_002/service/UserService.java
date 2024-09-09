@@ -36,6 +36,7 @@ public class UserService {
 		user.setPassword(passwordEncoder.encode(signupForm.getPassword()));
 		user.setRole(role);
 		user.setEnabled(false);
+		user.setIsPaidMember(false);
 
 		return userRepository.save(user);
 	}
@@ -79,4 +80,21 @@ public class UserService {
 		return userRepository.findByEmail(email);
 	}
 
+	@Transactional
+	public User saveUser(User user) {
+		return userRepository.save(user);
+	}
+
+	//ユーザーのロールを無料会員に変更し、有料会員から無料会員への変更を記録
+	@Transactional
+	public void changeUserRoleToFree(User user) {
+		Role freeRole = roleRepository.findByName("ROLE_GENERAL");
+		if (freeRole != null) {
+			user.setRole(freeRole);
+			user.setIsPaidMember(false);
+			userRepository.save(user);
+		} else {
+			throw new IllegalStateException("Free role not found");
+		}
+	}
 }

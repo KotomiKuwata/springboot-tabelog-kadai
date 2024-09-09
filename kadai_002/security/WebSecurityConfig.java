@@ -21,8 +21,8 @@ public class WebSecurityConfig {
 				.authorizeHttpRequests((requests) -> requests
 						.requestMatchers("/css/**", "/images/**", "/js/**", "/storage/**", "/", "/signup/**", "/stores", "/stores/{id}", "/membership/**", "/stripe/webhook", "/reviews/**").permitAll() // すべてのユーザーにアクセスを許可するURL           "
 						.requestMatchers("/admin/**", "/reviews/**").hasRole("ADMIN") // 管理者にのみアクセスを許可するURL
-						.requestMatchers("/user/**").hasRole("GENERAL") //無料会員
-						.requestMatchers("/stores/{id}/reviews/input", "/paidmember/**", "/reviews/**").hasRole("PAID_MEMBER") //有料会員
+						//.requestMatchers().hasRole("GENERAL") //無料会員
+						.requestMatchers("/paidmember/**", "/reviews/**").hasRole("PAID_MEMBER") //有料会員
 						.anyRequest().authenticated() // 上記以外のURLはログインが必要（会員または管理者のどちらでもOK）
 				)
 				.formLogin((form) -> form

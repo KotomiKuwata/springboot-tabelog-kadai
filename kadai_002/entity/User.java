@@ -18,70 +18,64 @@ import lombok.Data;
 @Data
 public class User {
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
-    
-    @Column(name = "name")
-    private String name;
-        
-    @Column(name = "furigana")
-    private String furigana;    
-    
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Integer id;
 
-    @Column(name = "date_of_birth")
-    private Date dateOfBirth;    
-    
-    
-    @Column(name = "phone_number")
-    private String phoneNumber;
-    
-    @Column(name = "email")
-    private String email;
-        
-    @Column(name = "password")
-    private String password;    
-    
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;   
-    
-    @Column(name = "enabled")
-    private Boolean enabled;
-    
-    @Column(name = "is_paid_member")
-    private Boolean isPaidMember;
-    
-    public Boolean isPaidMember() {
-        return this.isPaidMember;
-    }
-    
-    
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private Timestamp createdAt;
-    
-    @Column(name = "updated_at", insertable = false, updatable = false)
-    private Timestamp updatedAt; 
-    
-    @Column(name = "stripe_customer_id")
-    private String stripeCustomerId;
+	@Column(name = "name")
+	private String name;
 
-    @Column(name = "stripe_subscription_id")
-    private String stripeSubscriptionId;
-    
-    @Column(name = "card_last4")
-    private String cardLast4;
+	@Column(name = "furigana")
+	private String furigana;
 
-    @Column(name = "card_brand")
-    private String cardBrand;
+	@Column(name = "date_of_birth")
+	private Date dateOfBirth;
 
-    @Column(name = "card_exp_month")
-    private Integer cardExpMonth;
+	@Column(name = "phone_number")
+	private String phoneNumber;
 
-    @Column(name = "card_exp_year")
-    private Integer cardExpYear;
-    
-    
+	@Column(name = "email")
+	private String email;
+
+	@Column(name = "password")
+	private String password;
+
+	@ManyToOne
+	@JoinColumn(name = "role_id")
+	private Role role;
+
+	@Column(name = "enabled")
+	private Boolean enabled;
+
+	@Column(name = "is_paid_member")
+	private Boolean isPaidMember;
+
+	public Boolean isPaidMember() {
+		return this.isPaidMember;
+	}
+
+	@Column(name = "created_at", insertable = false, updatable = false)
+	private Timestamp createdAt;
+
+	@Column(name = "updated_at", insertable = false, updatable = false)
+	private Timestamp updatedAt;
+
+	@Column(name = "stripe_customer_id")
+	private String stripeCustomerId;
+
+	@Column(name = "stripe_subscription_id")
+	private String stripeSubscriptionId;
+
+	@Column(name = "card_last4")
+	private String cardLast4;
+
+	@Column(name = "card_brand")
+	private String cardBrand;
+
+	@Column(name = "card_exp_month")
+	private Integer cardExpMonth;
+
+	@Column(name = "card_exp_year")
+	private Integer cardExpYear;
+
 }
-
-

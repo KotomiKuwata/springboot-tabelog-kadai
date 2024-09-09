@@ -1,6 +1,7 @@
 package com.example.kadai_002.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -56,41 +58,29 @@ public class ReviewController {
 		return "reviews/index";
 	}
 
-	@GetMapping("/stores/{id}/reviews/input")
+	@PostMapping("/stores/{id}/reviews/input")
 	public String input(@PathVariable(name = "id") Integer id,
 			@ModelAttribute @Validated ReviewInputForm reviewInputForm,
 			BindingResult bindingResult,
 			RedirectAttributes redirectAttributes,
 			Model model) {
-
 		// バリデーションチェック
-		if (reviewInputForm.getRating() == null || reviewInputForm.getRating() < 1 || reviewInputForm.getRating() > 5) {
-			bindingResult.rejectValue("rating", "error.reviewInputForm", "評価は1から5の間で入力してください。");
-		}
-
-		if (reviewInputForm.getComment() == null || reviewInputForm.getComment().trim().isEmpty()) {
-			bindingResult.rejectValue("comment", "error.reviewInputForm", "コメントを入力してください。");
-		}
-
-		if (reviewInputForm.getComment().length() > 200) {
-			bindingResult.rejectValue("comment", "error.reviewInputForm", "コメントは200文字以内で入力してください。");
-		}
-
-		// 再度バリデーションチェック
 		if (bindingResult.hasErrors()) {
 			Store store = storeRepository.getReferenceById(id);
 			List<Review> reviews = reviewRepository.findByStoreId(id);
 			model.addAttribute("store", store);
 			model.addAttribute("reviews", reviews);
 			model.addAttribute("reservationInputForm", new ReservationInputForm());
-			model.addAttribute("errorMessage", "レビュー内容に不備があります。");
+
+			// FieldErrorを使用してエラーメッセージを追加
+			bindingResult.addError(new FieldError("reviewInputForm", "general", "レビュー内容に不備があります。"));
+
 			return "stores/show";
 		}
 
 		redirectAttributes.addFlashAttribute("reviewInputForm", reviewInputForm);
 
 		return "redirect:/stores/{id}/reviews/confirm";
-
 	}
 
 	@PostMapping("/stores/{id}/reviews/confirm")
@@ -101,18 +91,71 @@ public class ReviewController {
 		if (result.hasErrors()) {
 			return "stores/show";
 		}
+
 		model.addAttribute("store", storeRepository.getReferenceById(id));
+
 		return "reviews/confirm";
 	}
 
 	@PostMapping("/stores/{id}/reviews/create")
 	public String create(@PathVariable(name = "id") Integer id, @ModelAttribute ReviewInputForm reviewInputForm,
-	        @AuthenticationPrincipal UserDetails userDetails) {
-	    reviewInputForm.setStoreId(id);
-	    User user = userService.findByEmail(userDetails.getUsername());
-	    reviewInputForm.setUserId(user.getId());
-	    reviewService.create(reviewInputForm);
-	    return "redirect:/reviews?reviewed";
+			@AuthenticationPrincipal UserDetails userDetails) {
+		try {
+			reviewInputForm.setStoreId(id);
+			User user = userService.findByEmail(userDetails.getUsername());
+			reviewInputForm.setUserId(user.getId());
+			reviewService.create(reviewInputForm);
+			return "redirect:/reviews?reviewed";
+		} catch (Exception e) {
+			System.err.println("Error occurred while creating review: " + e.getMessage());
+			return "redirect:/stores/" + id + "?error";
+		}
+	}
+
+	@GetMapping("/{id}/edit")
+	public String edit(@PathVariable(name = "id") Integer id, Model model) {
+		Optional<Review> optionalReview = reviewRepository.findById(id);
+		if (optionalReview.isPresent()) {
+			Review review = optionalReview.get();
+			ReviewInputForm reviewInputForm = new ReviewInputForm();
+			reviewInputForm.setRating(review.getRating());
+			reviewInputForm.setComment(review.getComment());
+			reviewInputForm.setStoreId(review.getStore().getId());
+			reviewInputForm.setUserId(review.getUser().getId());
+			model.addAttribute("review", review);
+			model.addAttribute("reviewInputForm", reviewInputForm);
+			return "reviews/edit";
+		} else {
+			// レビューが見つからない場合の処理
+			return "redirect:/reviews"; // または適切なエラーページにリダイレクト
+		}
+	}
+
+	@PostMapping("/{id}/update")
+	public String update(@PathVariable(name = "id") Integer id,
+			@ModelAttribute @Validated ReviewInputForm reviewInputForm,
+			BindingResult bindingResult,
+			RedirectAttributes redirectAttributes) {
+		if (bindingResult.hasErrors()) {
+			return "reviews/edit";
+		}
+
+		try {
+			reviewService.update(id, reviewInputForm);
+			redirectAttributes.addFlashAttribute("successMessage", "レビューが更新されました。");
+			return "redirect:/reviews?edited";
+		} catch (Exception e) {
+			System.err.println("Error occurred while updating review: " + e.getMessage());
+			return "redirect:/reviews/" + id + "/edit?error";
+		}
+	}
+
+	@PostMapping("/{id}/delete")
+	public String delete(@PathVariable(name = "id") Integer id,
+			RedirectAttributes redirectAttributes) {
+		reviewService.delete(id);
+		redirectAttributes.addFlashAttribute("successMessage", "レビューが削除されました。");
+		return "redirect:/reviews?deleted";
 	}
 }
 
