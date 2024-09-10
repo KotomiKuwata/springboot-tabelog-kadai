@@ -121,69 +121,6 @@
 							</div>
 						</form>
 
-						<form method="post" th:action="@{/membership/update-card}">
-							<div class="form-group row mb-3">
-								<div class="col-md-5">
-									<label for="cardNumber" class="col-form-label text-md-left fw-bold">
-										<div class="d-flex align-items-center">
-											<span class="me-1">カード番号</span>
-											<span class="badge bg-danger">必須</span>
-										</div>
-									</label>
-								</div>
-								<div class="col-md-7">
-									<input type="text" id="cardNumber" name="cardNumber" class="form-control"
-										placeholder="1234 1234 1234 1234">
-								</div>
-							</div>
-
-							<div class="form-group row mb-3">
-								<div class="col-md-5">
-									<label for="expMonth" class="col-form-label text-md-left fw-bold">
-										<div class="d-flex align-items-center">
-											<span class="me-1">有効期限（月）</span>
-											<span class="badge bg-danger">必須</span>
-										</div>
-									</label>
-								</div>
-								<div class="col-md-3">
-									<input type="text" id="expMonth" name="expMonth" class="form-control"
-										placeholder="MM">
-								</div>
-								<div class="col-md-1">
-									<label for="expYear" class="col-form-label text-md-left fw-bold">
-										<div class="d-flex align-items-center">
-											<span class="me-1">/</span>
-										</div>
-									</label>
-								</div>
-								<div class="col-md-3">
-									<input type="text" id="expYear" name="expYear" class="form-control"
-										placeholder="YYYY">
-								</div>
-							</div>
-
-							<div class="form-group row mb-3">
-								<div class="col-md-5">
-									<label for="cvc" class="col-form-label text-md-left fw-bold">
-										<div class="d-flex align-items-center">
-											<span class="me-1">CVC</span>
-											<span class="badge bg-danger">必須</span>
-										</div>
-									</label>
-								</div>
-								<div class="col-md-7">
-									<input type="text" id="cvc" name="cvc" class="form-control" placeholder="CVC">
-								</div>
-							</div>
-
-							<div class="form-group row mb-3">
-								<div class="col-md-12 text-center">
-									<button type="submit" class="btn text-white shadow-sm w-50 kadai_002-btn">カード情報を更新する</button>
-								</div>
-							</div>
-						</form>
-
 					</div>
 				</div>
 			</div>
