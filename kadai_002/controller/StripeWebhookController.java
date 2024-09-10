@@ -1,22 +1,17 @@
 package com.example.kadai_002.controller;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.example.kadai_002.service.MembershipService;
 import com.example.kadai_002.service.StripeService;
-import com.stripe.Stripe;
-import com.stripe.exception.SignatureVerificationException;
-import com.stripe.model.Event;
-import com.stripe.model.checkout.Session;
-import com.stripe.net.Webhook;
+import com.example.kadai_002.service.UserService;
 
+@RestController
+@RequestMapping("/stripe")
 public class StripeWebhookController {
 	private final StripeService stripeService;
-	private final MembershipService membershipService;
+	private final UserService userService;
 
 	@Value("${stripe.api-key}")
 	private String stripeApiKey;
@@ -24,30 +19,9 @@ public class StripeWebhookController {
 	@Value("${stripe.webhook-secret}")
 	private String webhookSecret;
 
-	public StripeWebhookController(StripeService stripeService, MembershipService membershipService) {
+	public StripeWebhookController(StripeService stripeService, UserService userService) {
 		this.stripeService = stripeService;
-		this.membershipService = membershipService;
+		this.userService = userService;
 	}
-
-	@PostMapping("/stripe/webhook")
-	public ResponseEntity<String> handleStripeWebhook(@RequestBody String payload,
-			@RequestHeader("Stripe-Signature") String sigHeader) {
-		// Stripe署名の検証
-		Event event;
-		Stripe.apiKey = stripeApiKey;
-		try {
-			event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
-		} catch (SignatureVerificationException e) {
-			return ResponseEntity.badRequest().build();
-		}
-
-		// イベントタイプに応じた処理
-		if ("checkout.session.completed".equals(event.getType())) {
-		    Session session = (Session) event.getDataObjectDeserializer().getObject().get();
-		    String userEmail = session.getCustomerEmail();
-		    membershipService.updateMembershipStatus(userEmail);
-		}
-		return ResponseEntity.ok().build();
-	}
-
 }
+

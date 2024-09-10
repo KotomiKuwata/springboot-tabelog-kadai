@@ -10,6 +10,7 @@ import com.example.kadai_002.form.SignupForm;
 import com.example.kadai_002.form.UserEditForm;
 import com.example.kadai_002.repository.RoleRepository;
 import com.example.kadai_002.repository.UserRepository;
+import com.stripe.model.PaymentMethod;
 
 @Service
 public class UserService {
@@ -97,4 +98,16 @@ public class UserService {
 			throw new IllegalStateException("Free role not found");
 		}
 	}
+	
+	@Transactional
+    public void updateUserCardInfo(User user, PaymentMethod paymentMethod) {
+        if (paymentMethod != null && paymentMethod.getCard() != null) {
+            PaymentMethod.Card card = paymentMethod.getCard();
+            user.setCardLast4(card.getLast4());
+            user.setCardBrand(card.getBrand());
+            user.setCardExpMonth(card.getExpMonth().intValue());
+            user.setCardExpYear(card.getExpYear().intValue());
+            userRepository.save(user);  // データベースにユーザー情報を保存
+        }
+    }
 }
