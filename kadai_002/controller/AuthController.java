@@ -25,8 +25,10 @@ import com.example.kadai_002.entity.User;
 import com.example.kadai_002.entity.VerificationToken;
 import com.example.kadai_002.event.SignupEventPublisher;
 import com.example.kadai_002.form.SignupForm;
+import com.example.kadai_002.service.StripeService;
 import com.example.kadai_002.service.UserService;
 import com.example.kadai_002.service.VerificationTokenService;
+import com.stripe.exception.StripeException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,12 +38,14 @@ public class AuthController {
 	private final UserService userService;
 	private final SignupEventPublisher signupEventPublisher;
 	private final VerificationTokenService verificationTokenService;
+	private final StripeService stripeService;
 
 	public AuthController(UserService userService, SignupEventPublisher signupEventPublisher,
-			VerificationTokenService verificationTokenService) {
+			VerificationTokenService verificationTokenService, StripeService stripeService) {
 		this.userService = userService;
 		this.signupEventPublisher = signupEventPublisher;
 		this.verificationTokenService = verificationTokenService;
+		this.stripeService = stripeService;
 	}
 
 	@InitBinder
@@ -121,15 +125,28 @@ public class AuthController {
 	public String cancelSubscription(RedirectAttributes redirectAttributes, Principal principal,
 			HttpServletRequest request, HttpServletResponse response) {
 		User user = userService.findByEmail(principal.getName());
-		if (user != null && user.getIsPaidMember()) {
+		if (user == null || !user.getIsPaidMember()) {
+			redirectAttributes.addFlashAttribute("errorMessage", "有料会員ではないか、ユーザーが見つかりません。");
+			return "redirect:/error";
+		}
+
+		try {
+			String subscriptionId = user.getStripeSubscriptionId();
+			String customerId = user.getStripeCustomerId();
+
+			stripeService.cancelSubscriptionAndDeleteCustomer(subscriptionId, customerId);
 			userService.changeUserRoleToFree(user);
+
 			redirectAttributes.addFlashAttribute("successMessage", "有料会員の解約が完了しました。無料会員へ変更されました。");
 
-			// ユーザーをログアウトさせる
 			SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
 			securityContextLogoutHandler.logout(request, response,
 					SecurityContextHolder.getContext().getAuthentication());
+
+			return "redirect:/login";
+		} catch (StripeException e) {
+			redirectAttributes.addFlashAttribute("errorMessage", "サブスクリプションの解約に失敗しました: " + e.getMessage());
+			return "redirect:/error";
 		}
-		return "redirect:/login";
 	}
 }

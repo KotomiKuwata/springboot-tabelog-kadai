@@ -93,21 +93,27 @@ public class UserService {
 		if (freeRole != null) {
 			user.setRole(freeRole);
 			user.setIsPaidMember(false);
+			user.setStripeCustomerId(null);
+			user.setStripeSubscriptionId(null);
+			user.setCardLast4(null);
+			user.setCardBrand(null);
+			user.setCardExpMonth(null);
+			user.setCardExpYear(null);
 			userRepository.save(user);
 		} else {
 			throw new IllegalStateException("Free role not found");
 		}
 	}
-	
+
 	@Transactional
-    public void updateUserCardInfo(User user, PaymentMethod paymentMethod) {
-        if (paymentMethod != null && paymentMethod.getCard() != null) {
-            PaymentMethod.Card card = paymentMethod.getCard();
-            user.setCardLast4(card.getLast4());
-            user.setCardBrand(card.getBrand());
-            user.setCardExpMonth(card.getExpMonth().intValue());
-            user.setCardExpYear(card.getExpYear().intValue());
-            userRepository.save(user);  // データベースにユーザー情報を保存
-        }
-    }
+	public void updateUserCardInfo(User user, PaymentMethod paymentMethod) {
+		if (paymentMethod != null && paymentMethod.getCard() != null) {
+			PaymentMethod.Card card = paymentMethod.getCard();
+			user.setCardLast4(card.getLast4());
+			user.setCardBrand(card.getBrand());
+			user.setCardExpMonth(card.getExpMonth().intValue());
+			user.setCardExpYear(card.getExpYear().intValue());
+			userRepository.save(user); // データベースにユーザー情報を保存
+		}
+	}
 }

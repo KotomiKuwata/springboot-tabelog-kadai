@@ -138,4 +138,23 @@ public class StripeService {
 			user.setCardExpYear(card.getExpYear().intValue());
 		}
 	}
+
+	public void cancelSubscriptionAndDeleteCustomer(String subscriptionId, String customerId) throws StripeException {
+		Stripe.apiKey = stripeApiKey;
+		// サブスクリプションをキャンセル
+		try {
+			Subscription subscription = Subscription.retrieve(subscriptionId);
+			subscription.cancel();
+		} catch (StripeException e) {
+			throw new IllegalStateException("Failed to cancel the subscription: " + e.getMessage(), e);
+		}
+
+		// 顧客の削除
+		try {
+			Customer customer = Customer.retrieve(customerId);
+			customer.delete();
+		} catch (StripeException e) {
+			throw new IllegalStateException("Failed to delete the customer: " + e.getMessage(), e);
+		}
+	}
 }
