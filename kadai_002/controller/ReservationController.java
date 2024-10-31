@@ -66,12 +66,6 @@ public class ReservationController {
 	Model model) {
 	Store store = storeRepository.getReferenceById(id);
 
-	/* 予約時間のバリデーションチェック
-	if (reservationInputForm.getReservationDatetime() != null &&
-	!reservationService.isValidReservationTime(store, reservationInputForm.getReservationDatetime())) {
-	bindingResult.rejectValue("reservationDatetime", "error.reservationInputForm", "ネット予約は開店時間〜閉店時間2時間前までです。");
-	}*/
-
 	if (reservationInputForm.getReservationDatetime() != null &&
 	!reservationService.isValidReservationTime(store, reservationInputForm.getReservationDatetime())) {
 	FieldError fieldError = new FieldError(bindingResult.getObjectName(), "reservationDatetime", "ネット予約は開店時間〜閉店時間2時間前までです。");
