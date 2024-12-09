@@ -1,9 +1,8 @@
-let maxDate = new Date();
-maxDate = maxDate.setMonth(maxDate.getMonth() + 3);
-
-flatpickr('#fromCheckinDateToCheckoutDate', {
-	mode: "range",
-	locale: 'ja',
-	minDate: 'today',
-	maxDate: maxDate
+document.addEventListener('DOMContentLoaded', function() {
+    flatpickr("#reservationDatetime", {
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
+        minDate: new Date(),
+        locale: "ja"
+    });
 });

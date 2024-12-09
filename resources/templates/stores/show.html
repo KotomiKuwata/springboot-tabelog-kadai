@@ -238,21 +238,23 @@
 								<div sec:authorize="isAuthenticated()" class="col-lg-4 px-0 ps-lg-4 mb-4">
 									<div class="card">
 										<div class="card-body">
-
 											<form method="get"
-												th:action="@{/stores/__${store.getId}__/reservations/input}"
-												th:object="${reservationInputForm}">
+												th:action="@{/stores/{id}/reservations/input(id=${store.id})}"
+												th:object="${reservationInputForm}" th:data-store-id="${store.id}">
 												<div class="form-group mb-2">
-													<label for="reservationDatetime"
-														class="col-form-label text-md-left fw-bold">来店日時</label>
-													<div th:if="${#fields.hasErrors('reservationDatetime')}"
-														class="text-danger small mb-2"
-														th:errors="*{reservationDatetime}">
-													</div>
-													<input type="datetime-local" class="form-control"
-														th:field="*{reservationDatetime}" step="1800">
+													<label for="reservationDate"
+														class="col-form-label text-md-left fw-bold">来店日</label>
+													<input type="date" class="form-control" id="reservationDate"
+														name="reservationDate" required>
 												</div>
-
+												<div class="form-group mb-2">
+													<label for="reservationHour"
+														class="col-form-label text-md-left fw-bold">来店時間</label>
+													<select class="form-control" id="reservationHour"
+														name="reservationHour" required>
+														<option value="">選択してください</option>
+													</select>
+												</div>
 												<div class="form-group mb-4">
 													<label for="numberOfPeople"
 														class="col-form-label text-md-left fw-bold">来店人数</label>
