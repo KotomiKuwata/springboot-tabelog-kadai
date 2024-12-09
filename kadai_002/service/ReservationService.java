@@ -42,39 +42,24 @@ public class ReservationService {
 			reservation.setNumberOfPeople(reservationRegisterForm.getNumberOfPeople());
 
 			reservationRepository.save(reservation);
-			System.out.println("Reservation saved successfully: " + reservation);
 		} catch (Exception e) {
-			System.err.println("Error occurred while saving reservation: " + e.getMessage());
-			throw e; // 再スローしてトランザクションをロールバック
+			throw e; // トランザクションロールバック
 		}
 	}
 
 	public boolean isValidReservationTime(Store store, LocalDateTime reservationDateTime) {
 
-		LocalTime openingHours = store.getOpeningHours(); //開店時間の取得(例 10.17.17.17)
-		LocalTime closingTime = store.getClosingTime(); //閉店時間の取得 (例 19.0.2.5)
-		LocalTime reservationTime = reservationDateTime.toLocalTime(); //予約時間の取得
-		LocalTime lastReservationTime = closingTime.minusHours(2); //最終予約受付時間（閉店２時間前 例 17.22.0.3）
+		LocalTime openingHours = store.getOpeningHours();
+		LocalTime closingTime = store.getClosingTime();
+		LocalTime reservationTime = reservationDateTime.toLocalTime();
+		LocalTime lastReservationTime = closingTime.minusHours(2);
 
-		//予約開始時間
-		boolean isValidStartTime = openingHours.equals(reservationTime) || openingHours.isBefore(reservationTime);
+		boolean isValidStartTime =
+				openingHours.equals(reservationTime) || openingHours.isBefore(reservationTime);
 
-		// 日付をまたがない予約受付時間
-		boolean isBeforeOrAtLastReservation = lastReservationTime.isAfter(reservationTime)
-				|| reservationTime.equals(lastReservationTime);
+		boolean isBeforeOrAtLastReservation =
+				lastReservationTime.isAfter(reservationTime) || reservationTime.equals(lastReservationTime);
 
-		// 日付を跨ぐ予約受付時間
-		boolean isAfterMidnight = openingHours.isAfter(reservationTime) && openingHours.isAfter(lastReservationTime);
-
-		//日付を跨ぐ閉店時間
-		boolean closingTimeisAfterMidnight = closingTime.isBefore(openingHours)
-				&& !closingTime.equals(LocalTime.MIDNIGHT);
-
-		return (//営業時間が日付をまたがない場合 openingHours < reservationTime < lastReservationTime
-		isValidStartTime && isBeforeOrAtLastReservation)
-				||
-				(//営業時間が日付を跨ぐ場合 openingHours < reservationTime > 0 
-				isAfterMidnight && isBeforeOrAtLastReservation || isValidStartTime && closingTimeisAfterMidnight);
-
+		return isValidStartTime && isBeforeOrAtLastReservation;
 	}
 }
