@@ -74,20 +74,15 @@ INSERT IGNORE INTO users (id, name, furigana, date_of_birth, phone_number, email
 INSERT IGNORE INTO users (id, name, furigana, date_of_birth, phone_number, email, password, role_id, enabled, created_at, updated_at) VALUES (12, '侍 信平', 'サムライ シンペイ', '1961-05-14', '090-1234-5678', 'shinpei.samurai@example.com', '$2a$10$2JNjTwZBwo7fprL2X4sv.OEKqxnVtsVQvuXDkI8xVGix.U3W5B7CO', 1, false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 --reservationsテーブル
-INSERT IGNORE INTO reservations (store_id, user_id, reservation_datetime, number_of_people, created_at, updated_at) VALUES (1, 1, '2024-07-25 18:30:00', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT IGNORE INTO reservations (store_id, user_id, reservation_datetime, number_of_people, created_at, updated_at) VALUES (2, 2, '2024-07-26 12:00:00', 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT IGNORE INTO reservations (store_id, user_id, reservation_datetime, number_of_people, created_at, updated_at) VALUES (3, 3, '2024-07-27 19:00:00', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT IGNORE INTO reservations (store_id, user_id, reservation_datetime, number_of_people, created_at, updated_at) VALUES (4, 4, '2024-07-28 13:00:00', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-INSERT IGNORE INTO reservations (store_id, user_id, reservation_datetime, number_of_people, created_at, updated_at) VALUES (5, 5, '2024-07-29 14:30:00', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT IGNORE INTO reservations (store_id, user_id, reservation_date, reservation_time, number_of_people, created_at, updated_at) VALUES (1, 1, '2024-07-25', '18:30:00', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT IGNORE INTO reservations (store_id, user_id, reservation_date, reservation_time, number_of_people, created_at, updated_at) VALUES (2, 2, '2024-07-26', '12:00:00', 4, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT IGNORE INTO reservations (store_id, user_id, reservation_date, reservation_time, number_of_people, created_at, updated_at) VALUES (3, 3, '2024-07-27', '19:00:00', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT IGNORE INTO reservations (store_id, user_id, reservation_date, reservation_time, number_of_people, created_at, updated_at) VALUES (4, 4, '2024-07-28', '13:00:00', 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+INSERT IGNORE INTO reservations (store_id, user_id, reservation_date, reservation_time, number_of_people, created_at, updated_at) VALUES (5, 5, '2024-07-29', '14:30:00', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 --reviewsテーブル
-INSERT IGNORE INTO reviews (id, store_id, user_id, rating, comment, timestamp) VALUES
-(1, 1, 1, 5, '素晴らしいサービスでした！', '2024-08-14T10:00:00'),
-(2, 2, 2, 4, '料理が美味しかったです。', '2024-08-14T11:00:00'),
-(3, 3, 3, 3, '普通の体験でした。', '2024-08-14T12:00:00'),
-(4, 4, 4, 2, 'サービスが少し遅かったです。', '2024-08-14T13:00:00'),
-(5, 5, 5, 1, '期待外れでした。', '2024-08-14T14:00:00');
 
+--rolesテーブル
 INSERT IGNORE INTO roles (id, name) VALUES 
 (1, 'ROLE_GENERAL'), 
 (2, 'ROLE_ADMIN'), 
