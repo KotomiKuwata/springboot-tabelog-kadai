@@ -108,70 +108,49 @@ public class StoreService {
 		}
 	}
 
-	public List<Integer> getBusinessHours(Store store, LocalDate date) {
+	public List<String> getBusinessHours(Store store, LocalDate date) {
 		if (store.getOpeningHours() == null || store.getClosingTime() == null) {
 			return new ArrayList<>();
 		}
 
-		List<Integer> hours = new ArrayList<>();
+		List<String> hours = new ArrayList<>();
 		LocalTime openingTime = store.getOpeningHours();
 		LocalTime closingTime = store.getClosingTime();
+		// 閉店2時間前までを最終予約時間とする
+		LocalTime lastReservationTime = closingTime.minusHours(2);
 
-		for (int hour = openingTime.getHour(); hour <= closingTime.getHour() - 2; hour++) {
-			hours.add(hour);
+		LocalTime currentTime = openingTime;
+		while (currentTime.isBefore(lastReservationTime) || currentTime.equals(lastReservationTime)) {
+			hours.add(String.format("%02d:%02d", currentTime.getHour(), currentTime.getMinute()));
+			currentTime = currentTime.plusMinutes(30);
 		}
 
 		return hours;
 	}
 
 	public boolean isClosedDay(Store store, LocalDate date) {
-		// 店舗の定休日を取得
 		String closedDay = store.getClosedDay();
-
-		// 定休日が設定されていない場合はfalse
 		if (closedDay == null || closedDay.isEmpty()) {
 			return false;
 		}
 
-		// 日付から曜日を取得（1:月曜日 ～ 7:日曜日）
 		DayOfWeek dayOfWeek = date.getDayOfWeek();
-		int dayValue = dayOfWeek.getValue();
-
-		// カンマ区切りの定休日文字列を配列に分割
 		String[] closedDays = closedDay.split(",");
 
-		// 定休日かどうかをチェック
 		for (String day : closedDays) {
-			// 曜日名を数値に変換するロジックを追加
-			int closedDayValue;
-			switch (day.trim()) {
-			case "月曜日":
-				closedDayValue = 1;
-				break;
-			case "火曜日":
-				closedDayValue = 2;
-				break;
-			case "水曜日":
-				closedDayValue = 3;
-				break;
-			case "木曜日":
-				closedDayValue = 4;
-				break;
-			case "金曜日":
-				closedDayValue = 5;
-				break;
-			case "土曜日":
-				closedDayValue = 6;
-				break;
-			case "日曜日":
-				closedDayValue = 7;
-				break;
-			default:
-				continue; // 不正な形式の場合はスキップ
-			}
-			if (closedDayValue == dayValue) {
+			day = day.trim();
+			boolean isClosed = switch (day) {
+			case "月曜日" -> dayOfWeek == DayOfWeek.MONDAY;
+			case "火曜日" -> dayOfWeek == DayOfWeek.TUESDAY;
+			case "水曜日" -> dayOfWeek == DayOfWeek.WEDNESDAY;
+			case "木曜日" -> dayOfWeek == DayOfWeek.THURSDAY;
+			case "金曜日" -> dayOfWeek == DayOfWeek.FRIDAY;
+			case "土曜日" -> dayOfWeek == DayOfWeek.SATURDAY;
+			case "日曜日" -> dayOfWeek == DayOfWeek.SUNDAY;
+			default -> false;
+			};
+			if (isClosed)
 				return true;
-			}
 		}
 		return false;
 	}

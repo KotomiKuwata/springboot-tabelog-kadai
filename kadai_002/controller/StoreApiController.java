@@ -1,7 +1,9 @@
 package com.example.kadai_002.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
@@ -32,9 +34,20 @@ public class StoreApiController {
 		Store store = storeRepository.findById(storeId)
 				.orElseThrow(() -> new IllegalArgumentException("Invalid store ID"));
 
+		LocalDate reservationDate = LocalDate.parse(date);
 		Map<String, Object> response = new HashMap<>();
-		response.put("isClosed", storeService.isClosedDay(store, LocalDate.parse(date)));
-		response.put("availableHours", storeService.getBusinessHours(store, LocalDate.parse(date)));
+
+		// 定休日チェック
+		boolean isClosed = storeService.isClosedDay(store, reservationDate);
+		response.put("isClosed", isClosed);
+
+		// 予約可能時間の取得
+		if (!isClosed) {
+			List<String> availableHours = storeService.getBusinessHours(store, reservationDate);
+			response.put("availableHours", availableHours);
+		} else {
+			response.put("availableHours", new ArrayList<>());
+		}
 
 		return response;
 	}
