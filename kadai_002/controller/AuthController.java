@@ -137,7 +137,7 @@ public class AuthController {
 			stripeService.cancelSubscriptionAndDeleteCustomer(subscriptionId, customerId);
 			userService.changeUserRoleToFree(user);
 
-			redirectAttributes.addFlashAttribute("successMessage", "有料会員の解約が完了しました。無料会員へ変更されました。");
+			redirectAttributes.addFlashAttribute("successMessage", "有料会員の解約が完了しました。無料会員へ変更されました。会員情報確認には再度ログインを行なってください。");
 
 			SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
 			securityContextLogoutHandler.logout(request, response,

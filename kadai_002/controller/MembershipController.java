@@ -2,6 +2,7 @@ package com.example.kadai_002.controller;
 
 import java.security.Principal;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,7 +18,10 @@ import com.example.kadai_002.service.UserService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentMethod;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/membership")
@@ -76,18 +80,55 @@ public class MembershipController {
 		}
 	}
 
-	@GetMapping("/info")
+	/*@GetMapping("/info")
 	public String showMembershipInfo(Principal principal, Model model,
 			@RequestParam(required = false) String session_id) throws StripeException {
 		User user = userService.findByEmail(principal.getName());
 		model.addAttribute("user", user);
-
+	
 		if (user.isPaidMember()) {
 			model.addAttribute("cardInfo", user); // ユーザーオブジェクトにカード情報が含まれているため
+		}
+	
+		if (session_id != null) {
+			model.addAttribute("paymentMessage", "決済が完了しました。");
+		}
+	
+		return "membership/info";
+	}*/
+
+	@GetMapping("/info")
+	public String showMembershipInfo(Principal principal, Model model,
+			@RequestParam(required = false) String session_id,
+			HttpServletRequest request, HttpServletResponse response) throws StripeException {
+		User user = userService.findByEmail(principal.getName());
+		model.addAttribute("user", user);
+
+		if (user.isPaidMember()) {
+			model.addAttribute("cardInfo", user);
 		}
 
 		if (session_id != null) {
 			model.addAttribute("paymentMessage", "決済が完了しました。");
+		}
+
+		// ログアウト処理
+		SecurityContextHolder.clearContext();
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.invalidate();
+		}
+
+		// JSESSIONID Cookieを削除
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if ("JSESSIONID".equals(cookie.getName())) {
+					cookie.setValue("");
+					cookie.setMaxAge(0);
+					response.addCookie(cookie);
+				}
+			}
 		}
 
 		return "membership/info";
